@@ -3,5 +3,6 @@ get_dataset/Videos/*
 *.mp4
 *.zip
 *.jpg
+*.jpeg
 *.txt
 .vscode/*

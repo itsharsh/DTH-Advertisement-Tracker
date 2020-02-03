@@ -10,7 +10,8 @@ import numpy as np
 import cv2
 import random
 
-class Data_augmentation:
+
+class DataAugmentation:
     def __init__(self, path, image_name):
         '''
         Import image
@@ -30,14 +31,15 @@ class Data_augmentation:
         :param angle: Rotation angle in degrees. Positive values mean counter-clockwise rotation (the coordinate origin is assumed to be the top-left corner).
         :param scale: Isotropic scale factor.
         '''
-        angle = random.choice(range(-45,45,14)) # rotate randomly between -45 and +45
-        scale = random.choice(range(-2,2)) # scale by 1 to -2
+        angle = random.choice(
+            range(-45, 45, 14))  # rotate randomly between -45 and +45
+        scale = random.choice(range(-2, 2))  # scale by 1 to -2
         w = image.shape[1]
         h = image.shape[0]
-        #rotate matrix
-        M = cv2.getRotationMatrix2D((w/2,h/2), angle, scale)
-        #rotate
-        image = cv2.warpAffine(image,M,(w,h))
+        # rotate matrix
+        M = cv2.getRotationMatrix2D((w/2, h/2), angle, scale)
+        # rotate
+        image = cv2.warpAffine(image, M, (w, h))
         return image
 
     def flip(self, image, vflip=False, hflip=False):
@@ -53,30 +55,31 @@ class Data_augmentation:
             else:
                 c = 0 if vflip else 1
             image = cv2.flip(image, flipCode=c)
-        return image 
+        return image
 
-    
-    def image_augment(self, save_path): 
+    def image_augment(self, save_path):
         '''
         Create the new image with imge augmentation
         :param path: the path to store the new image
-        ''' 
+        '''
         img = self.image.copy()
         img_flip = self.flip(img, vflip=True, hflip=False)
         img_rot = self.rotate(img)
         #img_gaussian = self.add_GaussianNoise(img)
-        
+
         name_int = self.name[:len(self.name)-4]
-        cv2.imwrite(save_path+'%s' %str(name_int)+'_vflip.jpg', img_flip)
-        cv2.imwrite(save_path+'%s' %str(name_int)+'_rot.jpg', img_rot)
-    
-    
+        cv2.imwrite(save_path+'%s' % str(name_int)+'_vflip.jpg', img_flip)
+        cv2.imwrite(save_path+'%s' % str(name_int)+'_rot.jpg', img_rot)
+
+
 def main():
     current_dir = os.getcwd() + "/images/"
     for file in os.listdir(current_dir):
         print(file)
-        for i in range(10): # 10 different augmented image, for 1 image.
-            raw_image = Data_augmentation(current_dir,file)
-            raw_image.image_augment(os.getcwd() + '/augmented_images/' +str(i))
+        for i in range(10):  # 10 different augmented image, for 1 image.
+            raw_image = DataAugmentation(current_dir, file)
+            raw_image.image_augment(
+                os.getcwd() + '/augmented_images/' + str(i))
+
 
 main()
