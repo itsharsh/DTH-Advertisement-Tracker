@@ -15,14 +15,20 @@ main_folder structure
 
 '''
 
+# Annotations Folder should only only .zip files
+# Videos Folder should only only .mp4 files
+# Dataset Folder should contain processed frames (.jpg) and extracted .txt files
+
 
 import os
 loc = os.getcwd()
 
 for i in os.listdir(loc + "/Annotations/"):
-    for j in os.listdir(loc + "/images/"):
-        print(i, j)
+    for j in os.listdir(loc + "/image/"):
         if i[:-3] == j[:-3]:  # i.e the name match
-            source = loc + "/images/" + j
+            source_img = loc + "/image/" + j
+            source_anno = loc + "/Annotations/" + i
             dest = loc + "/image_with_annotation/" + j
-            os.rename(source, dest)
+            dest_anno = loc + "/image_with_annotation/" + i
+            os.rename(source_img, dest)
+            os.rename(source_anno, dest_anno)

@@ -1,2 +1,6 @@
 get_dataset/Annotations/*
 get_dataset/Videos/*
+*.mp4
+*.zip
+*.jpg
+*.txt
