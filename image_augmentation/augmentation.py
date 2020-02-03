@@ -1,8 +1,7 @@
 '''
 Data Augmentation :
 param : image
-output : augmented image
-
+output : n augmented image
 '''
 
 
@@ -20,6 +19,7 @@ class Data_augmentation:
         '''
         self.path = path
         self.name = image_name
+        print(path+image_name)
 
         self.image = cv2.imread(path+image_name)
 
@@ -72,8 +72,9 @@ class Data_augmentation:
     
     
 def main():
-    current_dir = os.getcwd() + "/images"
+    current_dir = os.getcwd() + "/images/"
     for file in os.listdir(current_dir):
+        print(file)
         for i in range(10): # 10 different augmented image, for 1 image.
             raw_image = Data_augmentation(current_dir,file)
             raw_image.image_augment(os.getcwd() + '/augmented_images/' +str(i))
