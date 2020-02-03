@@ -19,11 +19,10 @@ main_folder structure
 import os
 loc = os.getcwd()
 
-for i in os.listdir(loc + "/annotation/"):
-    for j in os.listdir(loc + "/image/"):
-        print(i,j)
-        if i[:-3]==j[:-3]: #i.e the name match
-            source = loc + "/image/" + j
+for i in os.listdir(loc + "/Annotations/"):
+    for j in os.listdir(loc + "/images/"):
+        print(i, j)
+        if i[:-3] == j[:-3]:  # i.e the name match
+            source = loc + "/images/" + j
             dest = loc + "/image_with_annotation/" + j
-            os.rename(source,dest)
-
+            os.rename(source, dest)
