@@ -21,9 +21,11 @@ loc = os.getcwd()
 
 for i in os.listdir(loc + "/annotation/"):
     for j in os.listdir(loc + "/image/"):
-        print(i,j)
         if i[:-3]==j[:-3]: #i.e the name match
-            source = loc + "/image/" + j
+            source_img = loc + "/image/" + j
+            source_anno = loc + "/annotation/" + i
             dest = loc + "/image_with_annotation/" + j
-            os.rename(source,dest)
+            dest_anno = loc + "/image_with_annotation/" + i
+            os.rename(source_img,dest)
+            os.rename(source_anno,dest_anno)
 
