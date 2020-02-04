@@ -16,6 +16,14 @@ videoDir = workdir+"Videos/"
 # videoDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/DTH/"
 
 
+def createDirectory(path):
+    try:
+        os.mkdir(path)
+        print("Created: ", path)
+    except FileExistsError:
+        print("Already exists: ", path)
+
+
 def getListOfFiles(dirName):
     listOfFile = os.listdir(dirName)
     allFiles = list()
@@ -69,6 +77,10 @@ def generateTestTrain():
 
     print("Completed")
 
+
+createDirectory(annotationsDir)
+createDirectory(dataDir)
+createDirectory(videoDir)
 
 for annotation in getListOfFiles(annotationsDir):
     annotationFileName = os.path.splitext(ntpath.basename(annotation))[0]
