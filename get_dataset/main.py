@@ -14,6 +14,7 @@ annotationsDir = workdir+"Annotations/"
 # For storing .mp4 folder
 videoDir = workdir+"Videos/"
 # videoDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/DTH/"
+video_file_list = []
 
 
 def createDirectory(path):
@@ -90,7 +91,7 @@ createDirectory(annotationsDir)
 createDirectory(dataDir)
 createDirectory(videoDir)
 
-video_file_list = []
+
 for annotation in getListOfFiles(annotationsDir):
     annotationFileName = os.path.splitext(ntpath.basename(annotation))[0]
     annotationFileNameExt = os.path.splitext(ntpath.basename(annotation))[1]
@@ -110,7 +111,7 @@ for annotation in getListOfFiles(annotationsDir):
                 for k in frame_difference:
                     k += 1
                     jpg_name = "frame_{:06d}.jpg".format(k)
-                    if os.path.exists(dataDir + videoFileName + '/' + jpg_name):
-                        os.remove(dataDir + videoFileName + '/' + jpg_name)
+                    # if os.path.exists(dataDir + videoFileName + '/' + jpg_name):
+                    #     os.remove(dataDir + videoFileName + '/' + jpg_name)
 
-# generateTestTrain()
+generateTestTrain()

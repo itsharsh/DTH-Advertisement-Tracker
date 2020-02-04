@@ -9,13 +9,9 @@ main_folder structure
         -frame002.jpg
     -annotation
         -frame001.jpg
-    -image_with_annotation (the desired images will be stored here. 
+    -image_with_annotation (the desired images will be stored here.
     mkdir this folder before running the script)
-
-
 '''
-
-
 import os
 import zipfile
 import ffmpeg
@@ -55,9 +51,10 @@ for i in zip(zip_files, mp4_files):
             loc + '/' + i[0][:-4]) if k.endswith(".txt")]
 
         select_frame.sort()
+        videoFileName = "\""+i[1][:-4]+"\""
 
         os.system(
-            "ffmpeg -i {a}.mp4 -r 25/1 {a}/frame_%06d.jpg".format(a=i[1][:-4]))
+            "ffmpeg -i {a}.mp4 -r 25/1 {a}/frame_%06d.jpg".format(a=videoFileName))
         location = i[1][:-4] + "/"
         select_frame_with_txt = [preProcess(k) for k in os.listdir(
             loc + '/' + i[0][:-4]) if k.endswith(".jpg")]
