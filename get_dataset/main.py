@@ -3,10 +3,10 @@ import cv2
 import glob
 import ntpath
 import zipfile
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 
 print(cv2.__version__)
-workdir = "/home/harsh/O2i-AI/get_dataset/"  # Ubuntu
+workdir = os.getcwd() + "/" # Ubuntu
 # workdir = "D:/Projects Data/AI/"  # Windows
 dataDir = workdir+"Dataset/"  # For storing .txt and .jpg in respective folders
 # For storing .zip folder
@@ -26,6 +26,16 @@ def getListOfFiles(dirName):
         else:
             allFiles.append(fullPath)
     return allFiles
+
+
+def preProcess(k):
+    '''
+    input format frame_000019.txt
+    output 19
+    '''
+    return int(k[6:12])
+
+
 
 
 def extractZIPFile(zipFileName):
@@ -69,7 +79,7 @@ def generateTestTrain():
 
     print("Completed")
 
-
+video_file_list = []
 for annotation in getListOfFiles(annotationsDir):
     annotationFileName = os.path.splitext(ntpath.basename(annotation))[0]
     annotationFileNameExt = os.path.splitext(ntpath.basename(annotation))[1]
@@ -79,6 +89,20 @@ for annotation in getListOfFiles(annotationsDir):
         for video in getListOfFiles(videoDir):
             videoFileName = os.path.splitext(ntpath.basename(video))[0]
             if(annotationFileName == videoFileName):
+                video_file_list.append(videoFileName)
                 extractFrames(video, videoFileName)
+                text_files  = [preProcess(k) for k in os.listdir(dataDir + videoFileName) if k.endswith(".txt")]
+                frame_files = [preProcess(k) for k in os.listdir(dataDir + videoFileName) if k.endswith(".jpg")]
+                frame_difference = set(frame_files).difference(set(text_files))
+                for k in frame_difference:
+                    k+=1
+                    jpg_name = "frame_{:06d}.jpg".format(k)
+                    if os.path.exists(dataDir + videoFileName + '/' +jpg_name):
+                        os.remove(dataDir + videoFileName + '/' +jpg_name)
 
-generateTestTrain()
+#generateTestTrain()
+
+
+
+
+
