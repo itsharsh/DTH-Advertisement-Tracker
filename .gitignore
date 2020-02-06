@@ -1,9 +1,7 @@
-get_dataset/Annotations/*
-get_dataset/Dataset/*
-get_dataset/Videos/*
 *.mp4
 *.zip
 *.jpg
 *.jpeg
 *.txt
+*.names
 .vscode/*

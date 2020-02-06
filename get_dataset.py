@@ -1,6 +1,7 @@
 import os
 import cv2
 import glob
+import shutil
 import ntpath
 import zipfile
 from sklearn.model_selection import train_test_split
@@ -12,9 +13,8 @@ dataDir = workdir+"Dataset/"  # For storing .txt and .jpg in respective folders
 # For storing .zip folder
 annotationsDir = workdir+"Annotations/"
 # For storing .mp4 folder
-videoDir = workdir+"Videos/"
-# videoDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/DTH/"
-video_file_list = []
+# videoDir = workdir+"Videos/"
+videoDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/DTH/"
 
 
 def createDirectory(path):
@@ -37,16 +37,8 @@ def getListOfFiles(dirName):
     return allFiles
 
 
-def preProcess(k):
-    '''
-    input format frame_000019.txt
-    output 19
-    '''
-    return int(k[6:12])
-
-
 def extractZIPFile(zipFileName):
-    print("Extracting: "+zipFileName)
+    print("Extracting: "+zipFileName+".zip")
     try:
         with zipfile.ZipFile(annotationsDir+annotationFileName+".zip", "r") as z:
             z.extractall(dataDir+annotationFileName)
@@ -55,18 +47,34 @@ def extractZIPFile(zipFileName):
         print("ZIP file not found")
 
 
-def extractFrames(videoPath, videoFileName):
-    print("Capturing Frames from: "+videoFileName)
+def preProcess(k):
+    return int(k[6:12])
+
+
+def getFrameList(annotationFileName):
+    frameList = [preProcess(k) for k in os.listdir(
+        dataDir+annotationFileName) if k.endswith(".txt")]
+    frameList.sort()
+    return frameList
+
+
+def extractFrames(videoPath, videoFileName, selectedFrames):
+    print("Capturing Frames from: "+videoFileName+".mp4")
     try:
-        vidcap = cv2.VideoCapture(videoPath)
-        success, image = vidcap.read()
-        count = 0
-        while success:
+        i = 0
+        while i < len(selectedFrames):
+            # ffmpeg
+            # os.system("ffmpeg -hide_banner -loglevel panic -i \"{videoFileName}\" -vf select='eq(n\,{frameno})' -vsync 0 -start_number {frameno} \"{outputDir}/frame_%06d.jpg\" ".format(
+            #     videoFileName=videoPath, outputDir=dataDir+videoFileName, frameno=selectedFrames[i]))
+
+            # opencv
+            cap = cv2.VideoCapture(videoPath)
+            cap.set(1, selectedFrames[i])
+            ret, frame = cap.read()
             cv2.imwrite(dataDir+videoFileName+"/frame_%s.jpg" %
-                        str(count).zfill(6), image)
-            success, image = vidcap.read()
-            # print('Read frame: ', count, success)
-            count += 1
+                        str(selectedFrames[i]).zfill(6), frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            cap.release()
+            i += 1
         print("Capturing Frames Completed: "+videoFileName)
     except FileNotFoundError:
         print("MP4 file not found")
@@ -76,7 +84,8 @@ def generateTestTrain():
     print("Generating Test Train:")
     listOfFiles = glob.glob(dataDir+"/*/"+"/*.txt")
     listOfFiles = [sub.replace('txt', 'jpg') for sub in listOfFiles]
-    Train, Test = train_test_split(listOfFiles, test_size=0.2, random_state=0)
+    Train, Test = train_test_split(
+        listOfFiles, test_size=0.2, random_state=0)
     file_train = open(dataDir+'train.txt', 'w')
     file_test = open(dataDir+'test.txt', 'w')
     for path in Train:
@@ -101,17 +110,7 @@ for annotation in getListOfFiles(annotationsDir):
         for video in getListOfFiles(videoDir):
             videoFileName = os.path.splitext(ntpath.basename(video))[0]
             if(annotationFileName == videoFileName):
-                video_file_list.append(videoFileName)
-                extractFrames(video, videoFileName)
-                text_files = [preProcess(k) for k in os.listdir(
-                    dataDir + videoFileName) if k.endswith(".txt")]
-                frame_files = [preProcess(k) for k in os.listdir(
-                    dataDir + videoFileName) if k.endswith(".jpg")]
-                frame_difference = set(frame_files).difference(set(text_files))
-                for k in frame_difference:
-                    k += 1
-                    jpg_name = "frame_{:06d}.jpg".format(k)
-                    # if os.path.exists(dataDir + videoFileName + '/' + jpg_name):
-                    #     os.remove(dataDir + videoFileName + '/' + jpg_name)
+                selectedFrames = getFrameList(annotationFileName)
+                extractFrames(video, videoFileName, selectedFrames)
 
 generateTestTrain()
