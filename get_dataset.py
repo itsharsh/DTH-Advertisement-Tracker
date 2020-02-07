@@ -7,14 +7,15 @@ import zipfile
 from sklearn.model_selection import train_test_split
 
 print(cv2.__version__)
-workdir = os.getcwd() + "/"  # Ubuntu
-# workdir = "D:/Projects Data/AI/"  # Windows
+workdir = os.getcwd() + "/"
 dataDir = workdir+"Dataset/"  # For storing .txt and .jpg in respective folders
 # For storing .zip folder
 annotationsDir = workdir+"Annotations/"
 # For storing .mp4 folder
 # videoDir = workdir+"Videos/"
 videoDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/DTH/"
+trainFilename = "train.txt"
+testFilename = "test.txt"
 
 
 def createDirectory(path):
@@ -84,8 +85,8 @@ def generateTestTrain(annotationFileName):
     allFiles = glob.glob(dataDir+annotationFileName+"/*.txt")
     fileList = [sub.replace('txt', 'jpg') for sub in allFiles]
     Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
-    file_train = open(dataDir+'atrain.txt', 'a+')
-    file_test = open(dataDir+'atest.txt', 'a+')
+    file_train = open(dataDir+'train.txt', 'a+')
+    file_test = open(dataDir+'test.txt', 'a+')
     for path in Train:
         file_train.write(path + "\n")
     for path in Test:
@@ -95,20 +96,20 @@ def generateTestTrain(annotationFileName):
 createDirectory(annotationsDir)
 createDirectory(dataDir)
 createDirectory(videoDir)
-file_train = open(dataDir+'atrain.txt', 'w')
-file_test = open(dataDir+'atest.txt', 'w')
+file_train = open(dataDir+trainFilename, 'w')
+file_test = open(dataDir+testFilename, 'w')
 
 for annotation in getListOfFiles(annotationsDir):
     annotationFileName = os.path.splitext(ntpath.basename(annotation))[0]
     annotationFileNameExt = os.path.splitext(ntpath.basename(annotation))[1]
     if(annotationFileNameExt == ".zip"):
-        # extractZIPFile(annotationsDir+annotationFileName)
+        extractZIPFile(annotationsDir+annotationFileName)
 
         for video in getListOfFiles(videoDir):
             videoFileName = os.path.splitext(ntpath.basename(video))[0]
             if(annotationFileName == videoFileName):
                 selectedFrames = getFrameList(annotationFileName)
-                # extractFrames(video, videoFileName, selectedFrames)
+                extractFrames(video, videoFileName, selectedFrames)
 
         generateTestTrain(annotationFileName)
 
