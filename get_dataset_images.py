@@ -7,13 +7,12 @@ import zipfile
 from sklearn.model_selection import train_test_split
 
 print(cv2.__version__)
-workdir = os.getcwd() + "/"  # Ubuntu
-# workdir = "D:/Projects Data/AI/"  # Windows
-dataDir = workdir+"Dataset/"  # For storing .txt and .jpg in respective folders
-# For storing .zip folder
-annotationsDir = workdir+"Annotations/"
-# For storing .JPG folder
-imagesDir = "/mnt/6C8CA6790B328288/Projects/AI/Situational Awareness System/Weapons Dataset/Optimized Images/"
+imagesDir = "/home/harsh/Optimized Images/"
+# imagesDir = "/mnt/6C8CA6790B328288/Projects/AI/Situational Awareness System/Weapons Dataset/Optimized Images/"
+workdir = "/home/harsh/Dataset for Training/"
+
+annotationZIPDir = workdir
+dataDir = workdir+"Dataset/"
 trainFilename = "train.txt"
 testFilename = "test.txt"
 outputExtention = ".JPG"
@@ -39,48 +38,59 @@ def getListOfFiles(dirName):
     return allFiles
 
 
-def extractZIPFile(zipFileName):
-    print("Extracting: "+zipFileName+".zip")
+def extractZIPFile(annotationZIPFile, annotationZIPFileName):
+    print("Extracting: "+annotationZIPFile)
     try:
-        with zipfile.ZipFile(annotationsDir+annotationFileName+".zip", "r") as z:
-            z.extractall(dataDir+annotationFileName)
-        print("ZIP Extraction Completed: "+annotationFileName)
+        with zipfile.ZipFile(annotationZIPFile, "r") as z:
+            z.extractall(dataDir+annotationZIPFileName)
+        print("ZIP Extraction Completed: "+annotationZIPFile)
     except FileNotFoundError:
         print("ZIP file not found")
 
 
-def generateTestTrain(annotationFileName):
-    allFiles = glob.glob(dataDir+annotationFileName+"/*.txt")
+def generateTestTrain():
+    allFiles = glob.glob(imagesDir+"/*/*.txt")
     fileList = [sub.replace('.txt', outputExtention) for sub in allFiles]
     Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
-    file_train = open(dataDir+'train.txt', 'a+')
-    file_test = open(dataDir+'test.txt', 'a+')
     for path in Train:
         file_train.write(path + "\n")
     for path in Test:
         file_test.write(path + "\n")
 
 
-createDirectory(annotationsDir)
+createDirectory(annotationZIPDir)
 createDirectory(dataDir)
 createDirectory(imagesDir)
-file_train = open(dataDir+trainFilename, 'w')
-file_test = open(dataDir+testFilename, 'w')
+file_train = open(workdir+trainFilename, 'w')
+file_test = open(workdir+testFilename, 'w')
+file_train = open(workdir+'train.txt', 'a+')
+file_test = open(workdir+'test.txt', 'a+')
 
-for annotation in getListOfFiles(annotationsDir):
-    annotationFileName = os.path.splitext(ntpath.basename(annotation))[0]
-    annotationFileNameExt = os.path.splitext(ntpath.basename(annotation))[1]
-    if(annotationFileNameExt == ".zip"):
-        extractZIPFile(annotationsDir+annotationFileName)
+imageList = []
+imageListPath = []
+for image in getListOfFiles(imagesDir):
+    imageListPath.append(image)
+    imageList.append(os.path.splitext(ntpath.basename(image))[0])
+
+for annotationZIPFile in getListOfFiles(annotationZIPDir):
+    annotationZIPFileName = os.path.splitext(
+        ntpath.basename(annotationZIPFile))[0]
+    if(annotationZIPFile.endswith(".zip")):
+        extractZIPFile(annotationZIPFile, annotationZIPFileName)
         i = 0
-        for image in getListOfFiles(imagesDir):
-            if image.endswith(outputExtention):
-                imageFileName = os.path.splitext(ntpath.basename(image))[0]
-                shutil.copyfile(
-                    image, dataDir+"/"+annotationFileName+"/"+imageFileName+outputExtention)
-                i += 1
-        print("Total Images: "+str(i))
 
-        generateTestTrain(annotationFileName)
+        for txtFile in getListOfFiles(dataDir+annotationZIPFileName+"/"):
+            if txtFile.endswith(".txt"):
+                file = os.path.splitext(ntpath.basename(txtFile))[0]
+                try:
+                    dest = imageListPath[imageList.index(file)]
+                    shutil.move(txtFile, dest[:-4]+".txt")
+                    i += 1
+                except ValueError:
+                    pass
+
+        print("Total Annotations: "+str(i))
+
+generateTestTrain()
 
 print("Completed")
