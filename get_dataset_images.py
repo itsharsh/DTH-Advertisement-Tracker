@@ -1,18 +1,14 @@
 import os
-import cv2
 import glob
 import shutil
 import ntpath
 import zipfile
 from sklearn.model_selection import train_test_split
 
-print(cv2.__version__)
-imagesDir = "/home/harsh/Optimized Images/"
-# imagesDir = "/mnt/6C8CA6790B328288/Projects/AI/Situational Awareness System/Weapons Dataset/Optimized Images/"
-workdir = "/home/harsh/Dataset for Training/"
+imagesDir = "/mnt/6C8CA6790B328288/Projects/AI/Situational Awareness System/Weapons Dataset/Optimized Images/"
+workdir = "/home/harsh/darknetdata/"
 
-annotationZIPDir = workdir
-dataDir = workdir+"Dataset/"
+annotationZIPDir = workdir+"Annotations/"
 trainFilename = "train.txt"
 testFilename = "test.txt"
 outputExtention = ".JPG"
@@ -42,7 +38,7 @@ def extractZIPFile(annotationZIPFile, annotationZIPFileName):
     print("Extracting: "+annotationZIPFile)
     try:
         with zipfile.ZipFile(annotationZIPFile, "r") as z:
-            z.extractall(dataDir+annotationZIPFileName)
+            z.extractall(annotationZIPDir+annotationZIPFileName)
         print("ZIP Extraction Completed: "+annotationZIPFile)
     except FileNotFoundError:
         print("ZIP file not found")
@@ -59,12 +55,12 @@ def generateTestTrain():
 
 
 createDirectory(annotationZIPDir)
-createDirectory(dataDir)
+createDirectory(annotationZIPDir)
 createDirectory(imagesDir)
-file_train = open(workdir+trainFilename, 'w')
-file_test = open(workdir+testFilename, 'w')
-file_train = open(workdir+'train.txt', 'a+')
-file_test = open(workdir+'test.txt', 'a+')
+file_train = open(annotationZIPDir+trainFilename, 'w')
+file_test = open(annotationZIPDir+testFilename, 'w')
+file_train = open(annotationZIPDir+'train.txt', 'a+')
+file_test = open(annotationZIPDir+'test.txt', 'a+')
 
 imageList = []
 imageListPath = []
@@ -79,7 +75,7 @@ for annotationZIPFile in getListOfFiles(annotationZIPDir):
         extractZIPFile(annotationZIPFile, annotationZIPFileName)
         i = 0
 
-        for txtFile in getListOfFiles(dataDir+annotationZIPFileName+"/"):
+        for txtFile in getListOfFiles(annotationZIPDir+annotationZIPFileName+"/"):
             if txtFile.endswith(".txt"):
                 file = os.path.splitext(ntpath.basename(txtFile))[0]
                 try:
