@@ -98,7 +98,7 @@ def extractFrames(videoPath, videoFileName, selectedFrames):
 def generateTestTrain(annotationZIPFileName):
     try:
         allFiles = glob.glob(dataDir+annotationZIPFileName+"/*/*.txt")
-        fileList = [sub.replace('txt', outputExtention) for sub in allFiles]
+        fileList = [sub.replace('.txt', outputExtention) for sub in allFiles]
         Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
         for path in Train:
             file_train.write(path + "\n")
