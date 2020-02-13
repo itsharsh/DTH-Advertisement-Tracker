@@ -6,16 +6,14 @@ import ntpath
 import zipfile
 from sklearn.model_selection import train_test_split
 
-print(cv2.__version__)
-workdir = os.getcwd() + "/"
-dataDir = workdir+"Dataset/"  # For storing .txt and .jpg in respective folders
-# For storing .zip folder
-annotationsDir = workdir+"Annotations/"
-# For storing .mp4 folder
-# videoDir = workdir+"Videos/"
 videoDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/DTH/"
+workdir = "/home/harsh/darknetdata/"
+dataDir = workdir+"Dataset/"  # For storing .txt and .jpg in respective folders
+annotationZIPDir = workdir+"Annotations/"
 trainFilename = "train.txt"
 testFilename = "test.txt"
+outputExtention = ".jpg"
+imageQuality = 50
 
 
 def createDirectory(path):
@@ -38,12 +36,12 @@ def getListOfFiles(dirName):
     return allFiles
 
 
-def extractZIPFile(zipFileName):
-    print("Extracting: "+zipFileName+".zip")
+def extractZIPFile(annotationZIPFile, annotationZIPFileName):
+    print("Extracting: "+annotationZIPFile)
     try:
-        with zipfile.ZipFile(annotationsDir+annotationFileName+".zip", "r") as z:
-            z.extractall(dataDir+annotationFileName)
-        print("ZIP Extraction Completed: "+annotationFileName)
+        with zipfile.ZipFile(annotationZIPFile, "r") as z:
+            z.extractall(annotationZIPDir+annotationZIPFileName)
+        print("ZIP Extraction Completed: "+annotationZIPFile)
     except FileNotFoundError:
         print("ZIP file not found")
 
@@ -52,9 +50,9 @@ def preProcess(k):
     return int(k[6:12])
 
 
-def getFrameList(annotationFileName):
+def getFrameList(annotationZIPFileName):
     frameList = [preProcess(k) for k in os.listdir(
-        dataDir+annotationFileName) if k.endswith(".txt")]
+        annotationZIPDir+annotationZIPFileName) if k.endswith(".txt")]
     frameList.sort()
     return frameList
 
@@ -63,7 +61,17 @@ def extractFrames(videoPath, videoFileName, selectedFrames):
     print("Capturing Frames from: "+videoFileName+".mp4")
     try:
         i = 0
+        j = 0
+        prevj = 0
+        createDirectory(dataDir+videoFileName)
+        print("Total Sets to be created: " +
+              str(int(selectedFrames[len(selectedFrames)-1] / 1000)))
+        createDirectory(dataDir+videoFileName+"/"+str(j))
         while i < len(selectedFrames):
+            j = int(selectedFrames[i] / 1000)
+            if prevj != j:
+                createDirectory(dataDir+videoFileName+"/"+str(j))
+                prevj = j
             # ffmpeg
             # os.system("ffmpeg -hide_banner -loglevel panic -i \"{videoFileName}\" -vf select='eq(n\,{frameno})' -vsync 0 -start_number {frameno} \"{outputDir}/frame_%06d.jpg\" ".format(
             #     videoFileName=videoPath, outputDir=dataDir+videoFileName, frameno=selectedFrames[i]))
@@ -72,45 +80,56 @@ def extractFrames(videoPath, videoFileName, selectedFrames):
             cap = cv2.VideoCapture(videoPath)
             cap.set(1, selectedFrames[i])
             ret, frame = cap.read()
-            cv2.imwrite(dataDir+videoFileName+"/frame_%s.jpg" %
-                        str(selectedFrames[i]).zfill(6), frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            cv2.imwrite(dataDir+videoFileName+"/"+str(j)+"/frame_%s.jpg" %
+                        str(selectedFrames[i]).zfill(6), frame, [cv2.IMWRITE_JPEG_QUALITY, imageQuality])
             cap.release()
+
+            annotationFile = "/frame_" + str(selectedFrames[i]).zfill(6)+".txt"
+
+            shutil.move(annotationZIPDir+videoFileName+annotationFile,
+                        dataDir+videoFileName+"/"+str(j) + annotationFile)
+
             i += 1
         print("Capturing Frames Completed: "+videoFileName)
     except FileNotFoundError:
-        print("MP4 file not found")
+        print("File not found in extractZIPFile")
 
 
-def generateTestTrain(annotationFileName):
-    allFiles = glob.glob(dataDir+annotationFileName+"/*.txt")
-    fileList = [sub.replace('txt', 'jpg') for sub in allFiles]
-    Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
-    file_train = open(dataDir+'train.txt', 'a+')
-    file_test = open(dataDir+'test.txt', 'a+')
-    for path in Train:
-        file_train.write(path + "\n")
-    for path in Test:
-        file_test.write(path + "\n")
+def generateTestTrain(annotationZIPFileName):
+    try:
+        allFiles = glob.glob(dataDir+annotationZIPFileName+"/*/*.txt")
+        fileList = [sub.replace('.txt', outputExtention) for sub in allFiles]
+        Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
+        for path in Train:
+            file_train.write(path + "\n")
+        for path in Test:
+            file_test.write(path + "\n")
+    except ValueError:
+        print("Empty dataset")
+    print("Test Train Generated Successfully")
+    print("Total Dataset: "+str(len(allFiles)))
 
 
-createDirectory(annotationsDir)
+createDirectory(annotationZIPDir)
 createDirectory(dataDir)
 createDirectory(videoDir)
-file_train = open(dataDir+trainFilename, 'w')
-file_test = open(dataDir+testFilename, 'w')
+file_train = open(annotationZIPDir+trainFilename, 'w')
+file_test = open(annotationZIPDir+testFilename, 'w')
+file_train = open(annotationZIPDir+'train.txt', 'a+')
+file_test = open(annotationZIPDir+'test.txt', 'a+')
 
-for annotation in getListOfFiles(annotationsDir):
-    annotationFileName = os.path.splitext(ntpath.basename(annotation))[0]
-    annotationFileNameExt = os.path.splitext(ntpath.basename(annotation))[1]
-    if(annotationFileNameExt == ".zip"):
-        extractZIPFile(annotationsDir+annotationFileName)
+for annotationZIPFile in getListOfFiles(annotationZIPDir):
+    annotationZIPFileName = os.path.splitext(
+        ntpath.basename(annotationZIPFile))[0]
+    if(annotationZIPFile.endswith(".zip")):
+        extractZIPFile(annotationZIPFile, annotationZIPFileName)
 
         for video in getListOfFiles(videoDir):
             videoFileName = os.path.splitext(ntpath.basename(video))[0]
-            if(annotationFileName == videoFileName):
-                selectedFrames = getFrameList(annotationFileName)
+            if(annotationZIPFileName == videoFileName):
+                selectedFrames = getFrameList(annotationZIPFileName)
                 extractFrames(video, videoFileName, selectedFrames)
 
-        generateTestTrain(annotationFileName)
+        generateTestTrain(annotationZIPFileName)
 
 print("Completed")

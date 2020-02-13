@@ -45,16 +45,20 @@ def extractZIPFile(annotationZIPFile, annotationZIPFileName):
 
 
 def generateTestTrain():
-    allFiles = glob.glob(imagesDir+"/*/*.txt")
-    fileList = [sub.replace('.txt', outputExtention) for sub in allFiles]
-    Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
-    for path in Train:
-        file_train.write(path + "\n")
-    for path in Test:
-        file_test.write(path + "\n")
+    try:
+        allFiles = glob.glob(imagesDir+"/*/*.txt")
+        fileList = [sub.replace('.txt', outputExtention) for sub in allFiles]
+        Train, Test = train_test_split(fileList, test_size=0.2, random_state=0)
+        for path in Train:
+            file_train.write(path + "\n")
+        for path in Test:
+            file_test.write(path + "\n")
+    except ValueError:
+        print("Empty dataset")
+    print("Test Train Generated Successfully")
+    print("Total Dataset: "+str(len(allFiles)))
 
 
-createDirectory(annotationZIPDir)
 createDirectory(annotationZIPDir)
 createDirectory(imagesDir)
 file_train = open(annotationZIPDir+trainFilename, 'w')
