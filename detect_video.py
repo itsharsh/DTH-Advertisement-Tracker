@@ -19,17 +19,8 @@ def init():
 
 
 def captureFrames(path):
-    videoObject = cv2.VideoCapture(path)
-    frameIndex = 0
-    success = 1
-    # while success:
-    success, frame = videoObject.read()
-    # frameIndex += 1
-    runDetection(frame, frameIndex)
 
-
-def runDetection(frame, frameIndex):
-    (H, W) = frame.shape[:2]
+    # Load model
     classes = open(classesPath).read().strip().split("\n")
     np.random.seed(42)
     colors = np.random.randint(
@@ -37,55 +28,79 @@ def runDetection(frame, frameIndex):
     print("[INFO] Loading model...")
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 
-    ln = net.getLayerNames()
-    ln = [ln[i[0]-1] for i in net.getUnconnectedOutLayers()]
-    blob = cv2.dnn.blobFromImage(
-        frame, 1/255.0, (frameH, frameW), swapRB=True, crop=False)
-    net.setInput(blob)
-    start = time.time()
-    layerOutputs = net.forward(ln)
-    end = time.time()
+    # take video feed
+    videoObject = cv2.VideoCapture(path)
+    (W, H) = (None, None)
+    try:
+        prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() else cv2.CAP_PROP_FRAME_COUNT
+        total = int(videoObject.get(prop))
+        print("Total Frames: {}".format(total))
+    except:
+        print("Error in reading file")
+        total = -1
+    frameIndex = 0
+    while True:
+        (grabbed, frame) = videoObject.read()
 
-    print("[INFO] YOLO took {:.6f} seconds".format(end-start))
+        if not grabbed:  # end of video
+            break
 
-    # visualize results
-    boxes = []
-    confidences = []
-    classIDs = []
+        if W is None or H is None:
+            (H, W) = frame.shape[:2]
+        frameIndex += 1
 
-    for output in layerOutputs:
-        for detection in output:
-            scores = detection[5:]
-            classID = np.argmax(scores)
-            confidence = scores[classID]
+        ln = net.getLayerNames()
+        ln = [ln[i[0]-1] for i in net.getUnconnectedOutLayers()]
+        blob = cv2.dnn.blobFromImage(
+            frame, 1/255.0, (frameH, frameW), swapRB=True, crop=False)
+        net.setInput(blob)
+        start = time.time()
+        layerOutputs = net.forward(ln)
+        end = time.time()
+        fps = 1/(end-start)
+        print("[INFO] Took {:.6f} seconds, fps: {:.6f}".format(end-start, fps))
 
-            if confidence > thresholdConfidence:
-                box = detection[0:4]*np.array([W, H, W, H])
-                (centerX, centerY, width, height) = box.astype("int")
+        # visualize results
+        boxes = []
+        confidences = []
+        classIDs = []
 
-                x = int(centerX-(width/2))
-                y = int(centerY-(height/2))
+        for output in layerOutputs:
+            for detection in output:
+                scores = detection[5:]
+                classID = np.argmax(scores)
+                confidence = scores[classID]
 
-                boxes.append([x, y, int(width), int(height)])
-                confidences.append(float(confidence))
-                classIDs.append(classID)
+                if confidence > thresholdConfidence:
+                    box = detection[0:4]*np.array([W, H, W, H])
+                    (centerX, centerY, width, height) = box.astype("int")
 
-    idxs = cv2.dnn.NMSBoxes(
-        boxes, confidences, thresholdConfidence, thresholdNMS)
+                    x = int(centerX-(width/2))
+                    y = int(centerY-(height/2))
 
-    if len(idxs) > 0:
-        for i in idxs.flatten():
-            (x, y) = (boxes[i][0], boxes[i][1])
-            (w, h) = (boxes[i][1], boxes[i][3])
+                    boxes.append([x, y, int(width), int(height)])
+                    confidences.append(float(confidence))
+                    classIDs.append(classID)
 
-            color = [int(c) for c in colors[classIDs[i]]]
-            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
-            text = "{}".format(classes[classIDs[i]])
-            cv2.putText(frame, text, (x, y-5),
-                        cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
-            print(frameIndex, " ", classes[classIDs[i]], " ")
-    cv2.imshow("Frame", frame)
-    cv2.waitKey(0)
+        idxs = cv2.dnn.NMSBoxes(
+            boxes, confidences, thresholdConfidence, thresholdNMS)
+
+        if len(idxs) > 0:
+            for i in idxs.flatten():
+                (x, y) = (boxes[i][0], boxes[i][1])
+                (w, h) = (boxes[i][1], boxes[i][3])
+
+                color = [int(c) for c in colors[classIDs[i]]]
+                cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
+                text = "{}".format(classes[classIDs[i]])
+                cv2.putText(frame, text, (x, y-5),
+                            cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
+                print(frameIndex, " ", classes[classIDs[i]], " ")
+        cv2.imshow("Frame", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    videoObject.release()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
