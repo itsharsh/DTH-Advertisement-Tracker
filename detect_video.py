@@ -1,7 +1,10 @@
 import cv2
+import csv
 import time
 import numpy as np
+from datetime import timedelta
 
+csvFilePath = "/home/harsh/Desktop/"
 videoPath = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Test Videos/test.mp4"
 modelDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Model"
 modelName = "/9_Ads"
@@ -47,7 +50,6 @@ def captureFrames(path):
 
         if W is None or H is None:
             (H, W) = frame.shape[:2]
-        frameIndex += 1
 
         ln = net.getLayerNames()
         ln = [ln[i[0]-1] for i in net.getUnconnectedOutLayers()]
@@ -58,7 +60,7 @@ def captureFrames(path):
         layerOutputs = net.forward(ln)
         end = time.time()
         fps = 1/(end-start)
-        print("[INFO] Took {:.6f} seconds, fps: {:.6f}".format(end-start, fps))
+        # print("[INFO] Took {:.6f} seconds, fps: {:.6f}".format(end-start, fps))
 
         # visualize results
         boxes = []
@@ -95,12 +97,30 @@ def captureFrames(path):
                 text = "{}".format(classes[classIDs[i]])
                 cv2.putText(frame, text, (x, y-5),
                             cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
-                print(frameIndex, " ", classes[classIDs[i]], " ")
+
+                calTime = timedelta(
+                    seconds=frameIndex/25)
+
+                print(frameIndex, " ", calTime, " ", classes[classIDs[i]])
+
+                row = [frameIndex, calTime, classes[classIDs[i]]]
+                updateCSV(row)
+
         cv2.imshow("Frame", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        frameIndex += 1
+
     videoObject.release()
     cv2.destroyAllWindows()
+
+
+def updateCSV(row):
+    with open(csvFilePath+'adtrack.csv', mode='a', newline='') as csvFile:
+        fileWriter = csv.writer(csvFile, delimiter=',',
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        fileWriter.writerow(row)
 
 
 if __name__ == "__main__":
