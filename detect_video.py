@@ -3,6 +3,8 @@ import csv
 import time
 import numpy as np
 from datetime import timedelta
+from itertools import groupby
+from operator import itemgetter
 
 csvFilePath = "/home/harsh/Desktop/"
 videoPath = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Test Videos/test.mp4"
@@ -16,20 +18,35 @@ frameW = 416
 thresholdConfidence = 0.5
 thresholdNMS = 0.3
 
+frameToRead = 25
+videoFPS = 25
+
 
 def init():
     pass
 
 
-def captureFrames(path):
-
-    # Load model
+def loadModel():
     classes = open(classesPath).read().strip().split("\n")
-    np.random.seed(42)
+    np.random.seed(len(classes))
     colors = np.random.randint(
         0, 255, size=(len(classes), 3), dtype="uint8")
     print("[INFO] Loading model...")
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
+    ln = net.getLayerNames()
+    ln = [ln[i[0]-1] for i in net.getUnconnectedOutLayers()]
+    return classes, colors, net, ln
+
+
+def getStartEnd(nums):
+    nums = sorted(set(nums))
+    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s+1 < e]
+    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
+    return list(zip(edges, edges))
+
+
+def captureFrames(path):
+    classes, colors, net, ln = loadModel()
 
     # take video feed
     videoObject = cv2.VideoCapture(path)
@@ -41,7 +58,9 @@ def captureFrames(path):
     except:
         print("Error in reading file")
         total = -1
+
     frameIndex = 0
+    classIndex = [None]*len(classes)
     while True:
         (grabbed, frame) = videoObject.read()
 
@@ -51,8 +70,6 @@ def captureFrames(path):
         if W is None or H is None:
             (H, W) = frame.shape[:2]
 
-        ln = net.getLayerNames()
-        ln = [ln[i[0]-1] for i in net.getUnconnectedOutLayers()]
         blob = cv2.dnn.blobFromImage(
             frame, 1/255.0, (frameH, frameW), swapRB=True, crop=False)
         net.setInput(blob)
@@ -99,12 +116,14 @@ def captureFrames(path):
                             cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
 
                 calTime = timedelta(
-                    seconds=frameIndex/25)
+                    seconds=frameIndex/frameToRead)
 
                 print(frameIndex, " ", calTime, " ", classes[classIDs[i]])
 
-                row = [frameIndex, calTime, classes[classIDs[i]]]
-                updateCSV(row)
+                if classIndex[classIDs[i]] is None:
+                    classIndex[classIDs[i]] = [frameIndex]
+                else:
+                    classIndex[classIDs[i]].append(frameIndex)
 
         cv2.imshow("Frame", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -114,6 +133,15 @@ def captureFrames(path):
 
     videoObject.release()
     cv2.destroyAllWindows()
+
+    for i, classList in enumerate(classIndex):
+        if classList is not None:
+            classList = getStartEnd(classList)
+            for startEnd in classList:
+                row = [startEnd[0], startEnd[1], timedelta(
+                    seconds=startEnd[0]/frameToRead), timedelta(
+                    seconds=startEnd[1]/frameToRead), classes[i]]
+                updateCSV(row)
 
 
 def updateCSV(row):
