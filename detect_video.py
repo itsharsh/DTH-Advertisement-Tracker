@@ -3,12 +3,9 @@ import cv2
 import csv
 import time
 import numpy as np
+import pandas as pd
 from datetime import timedelta
 from datetime import datetime
-
-videoName = "20191218-135227.mp4"
-channelName = "Star Sports 1 Hindi"
-adType = "AdTypeUnknown"
 
 modelName = "/9_Ads"
 csvFilePath = "/home/harsh/Desktop/"
@@ -18,6 +15,11 @@ videoPath = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Test Videos/"
 configPath = modelDir+modelName+modelName+".cfg"
 classesPath = modelDir+modelName+modelName+".names"
 weightsPath = modelDir+modelName+modelName+".weights"
+
+videoName = "20191218-135227.mp4"
+channelName = "Star Sports 1 Hindi"
+adType = "AdTypeUnknown"
+csvFileName = "adtrack.csv"
 
 frameH = 416
 frameW = 416
@@ -63,7 +65,7 @@ def captureFrames(path):
         total = int(videoObject.get(prop))
         print("Total Frames: {}".format(total))
     except:
-        print("Exception: ", sys.exc_info()[0])
+        print("Exception while capturing frames: ", sys.exc_info()[0])
         total = -1
 
     frameIndex = 0
@@ -79,8 +81,8 @@ def captureFrames(path):
             frameTime = timedelta(
                 seconds=frameIndex/frameToRead)
 
-            cv2.putText(frame, str(baseTimestamp+frameTime), (10, 20),
-                        cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1)
+            cv2.putText(frame, str(baseTimestamp+frameTime), (10, 30),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
 
             if W is None or H is None:
                 (H, W) = frame.shape[:2]
@@ -128,8 +130,8 @@ def captureFrames(path):
 
                     color = [int(c) for c in colors[classIDs[i]]]
                     cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
-                    text = "{} {}".format(
-                        classes[classIDs[i]], baseTimestamp+frameTime)
+                    text = "{}".format(
+                        classes[classIDs[i]])
                     cv2.putText(frame, text, (x, y-5),
                                 cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
 
@@ -150,18 +152,22 @@ def captureFrames(path):
         videoObject.release()
         cv2.destroyAllWindows()
     except:
-        print("Exception: ", sys.exc_info())
+        print("Exception while object detection: ", sys.exc_info())
 
-    for i, classList in enumerate(classIndex):
-        if classList is not None:
-            classList = getStartEnd(classList)
-            for startEnd in classList:
-                adStartTime = timedelta(seconds=startEnd[0]/frameToRead)
-                adEndTime = timedelta(seconds=startEnd[1]/frameToRead)
-                duration = adEndTime-adStartTime
-                row = [channelName, adType, classes[i], baseTimestamp.date(),
-                       (baseTimestamp+adStartTime).time(), (baseTimestamp+adEndTime).time(), duration]
-                updateCSV(row)
+    try:
+        for i, classList in enumerate(classIndex):
+            if classList is not None:
+                classList = getStartEnd(classList)
+                for startEnd in classList:
+                    adStartTime = timedelta(seconds=startEnd[0]/frameToRead)
+                    adEndTime = timedelta(seconds=startEnd[1]/frameToRead)
+                    duration = adEndTime-adStartTime
+
+                    row = [updateDBIndex(), channelName, adType, classes[i], baseTimestamp.date(),
+                           (baseTimestamp+adStartTime).time(), (baseTimestamp+adEndTime).time(), duration]
+                    updateCSV(row)
+    except:
+        print("Exception while updating DB: ", sys.exc_info())
 
 
 def getStartEnd(nums):
@@ -171,8 +177,19 @@ def getStartEnd(nums):
     return list(zip(edges, edges))
 
 
+def updateDBIndex():
+    try:
+        df = pd.read_csv(csvFilePath+csvFileName, header=None, usecols=[0])
+        # add 1 for change start index to 1, and add 1 for counter
+        return int(df.idxmax())+2
+
+    except pd.errors.EmptyDataError:
+        print("Empty CSV File")
+        return 1
+
+
 def updateCSV(row):
-    with open(csvFilePath+'adtrack.csv', mode='a', newline='') as csvFile:
+    with open(csvFilePath+csvFileName, mode='a', newline='') as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
         fileWriter.writerow(row)
