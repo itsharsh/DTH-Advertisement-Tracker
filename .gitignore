@@ -1,9 +1,11 @@
 __pycache__
-Dataset/*
+Dataset
+*.csv
+Prepare Clips
 *.mp4
 *.zip
 *.jpg
 *.jpeg
 *.txt
 *.names
-.vscode/*
+.vscode
