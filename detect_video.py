@@ -95,7 +95,8 @@ def captureFrames(path):
             layerOutputs = net.forward(ln)
             end = time.time()
             fps = 1/(end-start)
-            # print("[INFO] Took {:.6f} seconds, fps: {:.6f}".format(end-start, fps))
+            print("\t\t\t\t\t[INFO] Took {:.6f} seconds, fps: {:.6f}".format(
+                end-start, fps))
 
             # visualize results
             boxes = []
@@ -162,9 +163,11 @@ def captureFrames(path):
                     adStartTime = timedelta(seconds=startEnd[0]/frameToRead)
                     adEndTime = timedelta(seconds=startEnd[1]/frameToRead)
                     duration = adEndTime-adStartTime
+                    clipFileName = "{}-{}-{}-{}-{}".format(
+                        videoName.split(".")[0], startEnd[0], startEnd[1], classes[i], channelName)
 
                     row = [updateDBIndex(), channelName, adType, classes[i], baseTimestamp.date(),
-                           (baseTimestamp+adStartTime).time(), (baseTimestamp+adEndTime).time(), duration]
+                           (baseTimestamp+adStartTime).time(), (baseTimestamp+adEndTime).time(), duration, clipFileName]
                     updateCSV(row)
     except:
         print("Exception while updating DB: ", sys.exc_info())
