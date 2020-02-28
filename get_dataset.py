@@ -1,6 +1,7 @@
 import os
 import cv2
 import glob
+import time
 import shutil
 import ntpath
 import zipfile
@@ -110,6 +111,7 @@ def generateTestTrain(annotationZIPFileName):
     print("Total Dataset: "+str(len(allFiles)))
 
 
+start = time.time()
 createDirectory(annotationZIPDir)
 createDirectory(dataDir)
 createDirectory(videoDir)
@@ -133,3 +135,5 @@ for annotationZIPFile in getListOfFiles(annotationZIPDir):
         generateTestTrain(annotationZIPFileName)
 
 print("Completed")
+
+print("Time taken: {} seconds".format(time.time()-start))
