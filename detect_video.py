@@ -7,22 +7,24 @@ import pandas as pd
 from datetime import datetime
 from datetime import timedelta
 
-modelName = "/9_Ads"
+modelName = "/49_Ads"
 csvFilePath = "CSV/"
-modelDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Model"
-videoPath = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Test Videos/"
+# modelDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Model"
+# videoPath = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/Test Videos/"
+modelDir = "E:/Projects/AI/AdTracker/Model"
+videoPath = "E:/Projects/AI/AdTracker/DTH/Original/Star Sports 1/"
 
-configPath = modelDir+modelName+modelName+".cfg"
+configPath = modelDir+modelName+modelName+"_test.cfg"
 classesPath = modelDir+modelName+modelName+".names"
-weightsPath = modelDir+modelName+modelName+".weights"
+weightsPath = modelDir+modelName+modelName+"_last.weights"
 
 adType = "AdTypeUnknown"
 csvFileName = "adtrack.csv"
-videoName = "20191218-135227.mp4"
-channelName = "Star Sports 1 Hindi"
+videoName = "20200117-125957.mp4"
+channelName = "Star Sports 1"
 
-frameH = 416
-frameW = 416
+frameH = 352
+frameW = 352
 thresholdNMS = 0.3
 thresholdConfidence = 0.5
 
@@ -128,7 +130,7 @@ def captureFrames(path):
                 for i in idxs.flatten():
 
                     (x, y) = (boxes[i][0], boxes[i][1])
-                    (w, h) = (boxes[i][1], boxes[i][3])
+                    (w, h) = (boxes[i][2], boxes[i][3])
 
                     color = [int(c) for c in colors[classIDs[i]]]
                     cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
@@ -156,9 +158,15 @@ def captureFrames(path):
     except:
         print("Exception while object detection: ", sys.exc_info())
 
-    # Update in CSV DB
+    detectionInfo = {"classIndex": classIndex,
+                     "classes": classes, "baseTimestamp": baseTimestamp}
+
+    return detectionInfo
+
+
+def updateDB(detectionInfo):
     try:
-        for i, classList in enumerate(classIndex):
+        for i, classList in enumerate(detectionInfo["classIndex"]):
             if classList is not None:
                 classList = getStartEnd(classList)
                 for startEnd in classList:
@@ -166,9 +174,9 @@ def captureFrames(path):
                     sourceFile = videoName.split(".")[0]
                     global channelName
                     global adType
-                    brandName = classes[i]
+                    brandName = detectionInfo["classes"][i]
 
-                    date = baseTimestamp.date()
+                    date = detectionInfo["baseTimestamp"].date()
 
                     adFrameStart = startEnd[0]
                     adFrameEnd = startEnd[1]
@@ -178,13 +186,13 @@ def captureFrames(path):
                         seconds=adFrameEnd/frameToRead)
                     duration = (adClipEnd-adClipStart).total_seconds()
 
-                    adStart = ((baseTimestamp+adClipStart).time()
+                    adStart = ((detectionInfo["baseTimestamp"]+adClipStart).time()
                                ).strftime("%H:%M:%S.%f")[:-3]
-                    adEnd = ((baseTimestamp+adClipEnd).time()
+                    adEnd = ((detectionInfo["baseTimestamp"]+adClipEnd).time()
                              ).strftime("%H:%M:%S.%f")[:-3]
 
                     clipFileName = "ds-{}-de-ts-{}-te-xs-{}-xe-ys-{}-ye-ads-{}-ade-chs-{}-che".format(sourceFile.split(
-                        "-")[0], sourceFile.split("-")[1], int((adFrameStart/25)*1000), int((adFrameEnd/25)*1000), classes[i], channelName)
+                        "-")[0], sourceFile.split("-")[1], int((adFrameStart/25)*1000), int((adFrameEnd/25)*1000), detectionInfo["classes"][i], channelName)
 
                     header = ["DB Index", "Channel Name", "Type of Ad", "Brand Name",
                               "Date", "Ad Start", "Ad End", "Duration", "Clip File Name",
@@ -196,6 +204,9 @@ def captureFrames(path):
                     if index == 1:
                         updateCSV(header)
                     updateCSV(row)
+    except FileNotFoundError:
+        csvCreate = open(csvFilePath+csvFileName, mode='w', newline='')
+        updateDB(detectionInfo)
     except:
         print("Exception while updating DB: ", sys.exc_info())
 
@@ -218,7 +229,7 @@ def updateDBIndex():
 
 
 def updateCSV(row):
-    with open(csvFilePath+csvFileName, mode='a', newline='') as csvFile:
+    with open(csvFilePath+csvFileName, mode='a+', newline='') as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
         fileWriter.writerow(row)
@@ -226,5 +237,6 @@ def updateCSV(row):
 
 if __name__ == "__main__":
     init()
-    captureFrames(videoPath+videoName)
+    detectionInfo = captureFrames(videoPath+videoName)
+    updateDB(detectionInfo)
     # runDetection(frame)  will be used after implementing pipelines
