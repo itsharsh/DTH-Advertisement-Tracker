@@ -183,9 +183,8 @@ def captureFrames(path):
                     adEnd = ((baseTimestamp+adClipEnd).time()
                              ).strftime("%H:%M:%S.%f")[:-3]
 
-                    clipFileName = "{}-{}-{}-{}-{}".format(
-                        sourceFile, adFrameStart, adFrameEnd,
-                        classes[i], channelName)
+                    clipFileName = "ds-{}-de-ts-{}-te-xs-{}-xe-ys-{}-ye-ads-{}-ade-chs-{}-che".format(sourceFile.split(
+                        "-")[0], sourceFile.split("-")[1], int((adFrameStart/25)*1000), int((adFrameEnd/25)*1000), classes[i], channelName)
 
                     header = ["DB Index", "Channel Name", "Type of Ad", "Brand Name",
                               "Date", "Ad Start", "Ad End", "Duration", "Clip File Name",
