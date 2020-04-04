@@ -1,45 +1,44 @@
-import sys
 import cv2
-import csv
+import sys
 import time
 import numpy as np
-import pandas as pd
 from datetime import datetime
 from datetime import timedelta
 
+import detect_db
+
 modelName = "/49_Ads"
-csvFilePath = "CSV/"
 
 # adTrackerDirectory = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
-adTrackerDirectory = "E:/Projects/AI/AdTracker/"
+adTrackerDirectory = "D:/Office/Backup/Projects Data/AI/AdTracker/"
+outputVideoPath = "D:/Projects Data/AI/AdTracker/DTH/Processed/"
 
 modelDir = adTrackerDirectory+"Model"
 inputVideoPath = adTrackerDirectory+"DTH/Original/"
-outputVideoPath = "D:/Projects Data/AI/AdTracker/DTH/Processed/"
 
 configPath = modelDir+modelName+modelName+"_test.cfg"
 classesPath = modelDir+modelName+modelName+".names"
 weightsPath = modelDir+modelName+modelName+"_last.weights"
 
-adType = "AdTypeUnknown"
-csvFileName = "adtrack.csv"
-videoName = "20200117-213035.mp4"
-channelName = "Star Sports 1"
+miscInfo = {
+    "channelName": "Star Sports 1",
+    "videoName": "20200117-213035.mp4",
+    "adType": "Branding",
+    "videoFPS": 25,
+    "frameToRead": 1    # read every nth frame
+}
 
 frameH = 352
 frameW = 352
 thresholdNMS = 0.3
 thresholdConfidence = 0.5
 
-videoFPS = 25
-frameToRead = 1  # read every nth frame
-
 
 def init():
     pass
 
 
-def getTimestampFromVideofile():
+def getTimestampFromVideofile(videoName):
     timestamp = videoName.split(".")[0]
     timestamp = datetime.strptime(timestamp, "%Y%m%d-%H%M%S")
     return timestamp
@@ -58,16 +57,17 @@ def loadModel():
 
 
 def captureFrames(videoName):
-    baseTimestamp = getTimestampFromVideofile()
+    baseTimestamp = getTimestampFromVideofile(videoName)
     classes, colors, net, ln = loadModel()
 
-    videoRead = cv2.VideoCapture(inputVideoPath+channelName+"/"+videoName)
+    videoRead = cv2.VideoCapture(
+        inputVideoPath+miscInfo["channelName"]+"/"+videoName)
     # (W, H) = frame.shape[:2]
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
     videoWrite = cv2.VideoWriter(outputVideoPath+videoName,
-                                 cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), videoFPS, (W, H))
+                                 cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), miscInfo["videoFPS"], (W, H))
     try:
         prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() else cv2.CAP_PROP_FRAME_COUNT
         total = int(videoRead.get(prop))
@@ -88,7 +88,7 @@ def captureFrames(videoName):
             break
 
         frameTime = timedelta(
-            seconds=frameIndex/videoFPS)
+            seconds=frameIndex/miscInfo["videoFPS"])
 
         cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
                     cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
@@ -97,12 +97,12 @@ def captureFrames(videoName):
             frame, 1/255.0, (frameH, frameW), swapRB=True, crop=False)
         net.setInput(blob)
 
-        if frameIndex % frameToRead == 0:
+        if frameIndex % miscInfo["frameToRead"] == 0:
             start = time.time()
             layerOutputs = net.forward(ln)
             end = time.time()
             try:
-                fps = frameToRead/(end-start)
+                fps = miscInfo["frameToRead"]/(end-start)
             except ZeroDivisionError:
                 fps = 0
 
@@ -172,82 +172,8 @@ def captureFrames(videoName):
     return detectionInfo
 
 
-def updateDB(detectionInfo):
-    try:
-        for i, classList in enumerate(detectionInfo["classIndex"]):
-            if classList is not None:
-                classList = getStartEnd(classList)
-                for startEnd in classList:
-                    index = updateDBIndex()
-                    sourceFile = videoName.split(".")[0]
-                    global channelName
-                    global adType
-                    brandName = detectionInfo["classes"][i]
-
-                    date = detectionInfo["baseTimestamp"].date()
-
-                    adFrameStart = startEnd[0]
-                    adFrameEnd = startEnd[1]
-                    adClipStart = timedelta(
-                        seconds=adFrameStart/frameToRead)
-                    adClipEnd = timedelta(
-                        seconds=adFrameEnd/frameToRead)
-                    duration = (adClipEnd-adClipStart).total_seconds()
-
-                    adStart = ((detectionInfo["baseTimestamp"]+adClipStart).time()
-                               ).strftime("%H:%M:%S.%f")[:-3]
-                    adEnd = ((detectionInfo["baseTimestamp"]+adClipEnd).time()
-                             ).strftime("%H:%M:%S.%f")[:-3]
-
-                    clipFileName = "ds-{}-de-ts-{}-te-xs-{}-xe-ys-{}-ye-ads-{}-ade-chs-{}-che".format(
-                        sourceFile.split("-")[0], sourceFile.split("-")[1],
-                        int((adFrameStart/videoFPS) * 1000),
-                        int((adFrameEnd/videoFPS)*1000),
-                        detectionInfo["classes"][i], channelName)
-
-                    header = ["DB Index", "Channel Name", "Type of Ad", "Brand Name",
-                              "Date", "Ad Start", "Ad End", "Duration", "Clip File Name",
-                              "Source File", "Ad Frame Start", "Ad Frame End"]
-                    row = [index, channelName, adType, brandName,
-                           date, adStart, adEnd, duration, clipFileName,
-                           sourceFile, adFrameStart, adFrameEnd]
-
-                    if index == 1:
-                        updateCSV(header)
-                    updateCSV(row)
-    except FileNotFoundError:
-        csvCreate = open(csvFilePath+csvFileName, mode='w', newline='')
-        updateDB(detectionInfo)
-    except:
-        print("Exception while updating DB: ", sys.exc_info())
-
-
-def getStartEnd(nums):
-    nums = sorted(set(nums))
-    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s+1 < e]
-    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
-    return list(zip(edges, edges))
-
-
-def updateDBIndex():
-    try:
-        df = pd.read_csv(csvFilePath+csvFileName)
-        return df["DB Index"].max()+1  # add 1 for counter
-
-    except pd.errors.EmptyDataError:
-        print("Empty CSV File")
-        return 1
-
-
-def updateCSV(row):
-    with open(csvFilePath+csvFileName, mode='a+', newline='') as csvFile:
-        fileWriter = csv.writer(csvFile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        fileWriter.writerow(row)
-
-
 if __name__ == "__main__":
     init()
-    detectionInfo = captureFrames(videoName)
-    updateDB(detectionInfo)
+    detectionInfo = captureFrames(miscInfo["videoName"])
+    detect_db.updateDB(detectionInfo, miscInfo)
     # runDetection(frame)  will be used after implementing pipelines
