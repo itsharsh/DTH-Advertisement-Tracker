@@ -6,7 +6,7 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 channelNameList = ["Star Sports 1", "Star Sports 1 Hindi"]
 
 workingDirectory = "/home/vivek/Test"
-dataFilePath = os.path.join("CSV", "adtrack.csv")
+dataFilePath = os.path.join("/home/vivek/Test/CSV", "adtrack.csv")
 
 videoDataPath = os.path.join(workingDirectory, "Original")
 outputDataPath = os.path.join(workingDirectory, "Ad Clips")
@@ -41,7 +41,8 @@ for channelName in channelNameList:
 
     adStartTimeArray = pd.to_timedelta(dataset['Ad Start'])
     adEndTimeArray = pd.to_timedelta(dataset['Ad End'])
-    adDurationArray = adEndTimeArray-adStartTimeArray
+    #adDurationArray = adEndTimeArray-adStartTimeArray
+    adDurationArray = np.array(dataset['Duration'])
     adClipFileName = np.array(dataset['Clip File Name'])
     adStartTime = np.array(dataset['Ad Frame Start'])
     adEndTime = np.array(dataset['Ad Frame End'])
@@ -62,16 +63,14 @@ for channelName in channelNameList:
 
         print(sourceFile)
         print(outPutFile)
-        print(adStartTime[fileIndex]-1, adEndTime[fileIndex]+1)
-        ffmpeg_extract_subclip(
-            sourceFile, adStartTime[fileIndex]*0.04, adEndTime[fileIndex]*0.04, outPutFile)
-        # terminalCommand = "ffmpeg -n -i \""+videoDataPath+"/" + \
-        #    str(fileNameArray[fileIndex])+".mp4\""+" -ss " + \
-        #    str(adStartTime[fileIndex]) + " -t " + \
-        #    str(adDurationArray[fileIndex].total_seconds()+1) + " \"" + \
-        #        makeDirectoryPath+"/"+adClipFileName[fileIndex]+".mp4\""
-        # print(terminalCommand)
-        # print(os.popen(terminalCommand).read())
+        print(adStartTime[fileIndex]*0.04, adEndTime[fileIndex]*0.04)
+        terminalCommand = "ffmpeg -n -i \""+videoDataPath+"/" + \
+           str(fileNameArray[fileIndex])+".mp4\""+" -ss " + \
+           str(adStartTime[fileIndex]*0.04) + " -t " + \
+           str(adDurationArray[fileIndex]*0.04) + " \"" + \
+               makeDirectoryPath+"/"+adClipFileName[fileIndex]+".mp4\""
+        print(terminalCommand)
+        print(os.popen(terminalCommand).read())
         fileIndex += 1
 
     print(channelName+" Completed")
