@@ -1,6 +1,7 @@
 import cv2
 import sys
 import time
+import platform
 import numpy as np
 from datetime import datetime
 from datetime import timedelta
@@ -9,8 +10,12 @@ import detect_db
 
 modelName = "/49_Ads"
 
-# adTrackerDirectory = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
-adTrackerDirectory = "D:/Office/Backup/Projects Data/AI/AdTracker/"
+
+if platform.system() == "Windows":
+    adTrackerDirectory = "D:/Office/Backup/Projects Data/AI/AdTracker/"
+elif platform.system() == "Linux":
+    adTrackerDirectory = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
+
 outputVideoPath = "D:/Projects Data/AI/AdTracker/DTH/Processed/"
 
 modelDir = adTrackerDirectory+"Model"
