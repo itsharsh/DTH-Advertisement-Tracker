@@ -1,6 +1,8 @@
+import os
 import cv2
 import sys
 import time
+import imutils
 import platform
 import numpy as np
 from datetime import datetime
@@ -8,7 +10,7 @@ from datetime import timedelta
 
 import detect_db
 
-modelName = "/49_Ads"
+modelName = "49_Ads"
 
 
 if platform.system() == "Windows":
@@ -16,14 +18,13 @@ if platform.system() == "Windows":
 elif platform.system() == "Linux":
     adTrackerDirectory = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
 
-outputVideoPath = "D:/Projects Data/AI/AdTracker/DTH/Processed/"
+modelDir = os.path.join(adTrackerDirectory, "Model")
+inputVideoPath = os.path.join(adTrackerDirectory, "DTH", "Original")
+outputVideoPath = os.path.join(adTrackerDirectory, "DTH", "Processed")
 
-modelDir = adTrackerDirectory+"Model"
-inputVideoPath = adTrackerDirectory+"DTH/Original/"
-
-configPath = modelDir+modelName+modelName+"_test.cfg"
-classesPath = modelDir+modelName+modelName+".names"
-weightsPath = modelDir+modelName+modelName+"_last.weights"
+configPath = os.path.join(modelDir, modelName, modelName + "_test.cfg")
+classesPath = os.path.join(modelDir, modelName, modelName + ".names")
+weightsPath = os.path.join(modelDir, modelName, modelName + "_last.weights")
 
 miscInfo = {
     "channelName": "Star Sports 1",
@@ -65,13 +66,13 @@ def captureFrames(videoName):
     baseTimestamp = getTimestampFromVideofile(videoName)
     classes, colors, net, ln = loadModel()
 
-    videoRead = cv2.VideoCapture(
-        inputVideoPath+miscInfo["channelName"]+"/"+videoName)
+    videoRead = cv2.VideoCapture(os.path.join(
+        inputVideoPath, miscInfo["channelName"], videoName))
     # (W, H) = frame.shape[:2]
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    videoWrite = cv2.VideoWriter(outputVideoPath+videoName,
+    videoWrite = cv2.VideoWriter(os.path.join(outputVideoPath, videoName),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), miscInfo["videoFPS"], (W, H))
     try:
         prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() else cv2.CAP_PROP_FRAME_COUNT
