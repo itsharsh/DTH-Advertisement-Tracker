@@ -7,7 +7,7 @@ from datetime import timedelta
 
 import path_config
 
-adTrackerDirectory = path_config.adTrackerDirectory
+adTrackerDir = path_config.adTrackerDir
 dbFilePath = path_config.dbFilePath
 
 

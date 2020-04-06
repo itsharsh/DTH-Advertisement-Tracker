@@ -29,4 +29,4 @@ brandName = "Merinolam"
 brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
 
 brandFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
-brandNonFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
+brandNonFCTFilePath = os.path.join(brandDir, "*.jpeg")

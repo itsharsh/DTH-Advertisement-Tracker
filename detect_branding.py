@@ -14,8 +14,8 @@ import path_config
 adTrackerDir = path_config.adTrackerDir
 modelDir = path_config.modelDir
 modelName = path_config.brandingModelName
-inputVideoDir = path_config.inputVideoDir
-outputVideoDir = path_config.outputVideoDir
+originalVideoDir = path_config.originalVideoDir
+processedVideoDir = path_config.processedVideoDir
 
 configPath = path_config.brandingModelConfigPath
 classesPath = path_config.brandingModelClassesPath
@@ -62,12 +62,12 @@ def captureFrames(videoName):
     classes, colors, net, ln = loadModel()
 
     videoRead = cv2.VideoCapture(os.path.join(
-        inputVideoDir, miscInfo["channelName"], videoName))
+        originalVideoDir, miscInfo["channelName"], videoName))
     # (W, H) = frame.shape[:2]
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    videoWrite = cv2.VideoWriter(os.path.join(outputVideoDir, videoName),
+    videoWrite = cv2.VideoWriter(os.path.join(processedVideoDir, videoName),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), miscInfo["videoFPS"], (W, H))
     try:
         prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() else cv2.CAP_PROP_FRAME_COUNT
