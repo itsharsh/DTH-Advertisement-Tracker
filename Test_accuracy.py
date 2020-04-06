@@ -3,7 +3,7 @@ import cv2
 import imutils
 import pandas as pd
 import numpy as np
-dataFilePath = "/home/vivek/Test/CSV/adtrack.csv"
+dataFilePath = "/home/vivek/Test/CSV/20200117-213035-17000-1f.csv"
 workingDirectory = "/home/vivek/Test/Ad Clips"
 dataset=pd.read_csv(dataFilePath)
 channelNameList=np.array(dataset['Channel Name'])
@@ -27,7 +27,8 @@ while (fileIndex<adClipFileName.size):
 
 
 # import cv2
-# video=cv2.VideoCapture('/home/vivek/Test/test.mp4')
-# total=int(video.get(7))
+# video=cv2.VideoCapture('/home/vivek/Test/test3.mp4')
+# prop=cv2.CAP_PROP_FRAME_COUNT
+# total=int(video.get(prop))
 # print(total)
 # print(total*0.04)

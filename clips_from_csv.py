@@ -6,7 +6,7 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 channelNameList = ["Star Sports 1", "Star Sports 1 Hindi"]
 
 workingDirectory = "/home/vivek/Test"
-dataFilePath = os.path.join("/home/vivek/Test/CSV", "adtrack.csv")
+dataFilePath = os.path.join("/home/vivek/Test/CSV", "20200117-213035-17000-1f.csv")
 
 videoDataPath = os.path.join(workingDirectory, "Original")
 outputDataPath = os.path.join(workingDirectory, "Ad Clips")
@@ -39,8 +39,8 @@ for channelName in channelNameList:
         dataset['Source File'], errors='coerce', format="%Y%m%d-%H%M%S")
     print(fileTimeStampArray)
 
-    adStartTimeArray = pd.to_timedelta(dataset['Ad Start'])
-    adEndTimeArray = pd.to_timedelta(dataset['Ad End'])
+    #adStartTimeArray = pd.to_timedelta(dataset['Ad Start'])
+    #adEndTimeArray = pd.to_timedelta(dataset['Ad End'])
     #adDurationArray = adEndTimeArray-adStartTimeArray
     adDurationArray = np.array(dataset['Duration'])
     adClipFileName = np.array(dataset['Clip File Name'])
@@ -63,11 +63,11 @@ for channelName in channelNameList:
 
         print(sourceFile)
         print(outPutFile)
-        print(adStartTime[fileIndex]*0.04, adEndTime[fileIndex]*0.04)
+        print(adStartTime[fileIndex]*0.040, adEndTime[fileIndex]*0.040)
         terminalCommand = "ffmpeg -n -i \""+videoDataPath+"/" + \
            str(fileNameArray[fileIndex])+".mp4\""+" -ss " + \
-           str(adStartTime[fileIndex]*0.04) + " -t " + \
-           str(adDurationArray[fileIndex]*0.04) + " \"" + \
+           str(adStartTime[fileIndex]*0.040) + " -t " + \
+           str(adDurationArray[fileIndex]*0.040) + " \"" + \
                makeDirectoryPath+"/"+adClipFileName[fileIndex]+".mp4\""
         print(terminalCommand)
         print(os.popen(terminalCommand).read())
