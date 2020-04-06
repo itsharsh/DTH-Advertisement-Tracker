@@ -15,70 +15,80 @@ videoPath = "D:\Office\Backup\Projects Data\AI\AdTracker\DTH"
 originalFileName = "20191218-135227.mp4"
 clipFileName = "20191218-135227-2137-2152-1Mg-Star Sports 1 Hindi.mp4"
 
-cap = cv2.VideoCapture(originalFileName)
-cap1 = cv2.VideoCapture(clipFileName)
+import cv2
+from skimage.measure import compare_ssim as ssim
+import logging
+import datetime
+import csv
+from time import process_time
+import detect_db
+start_time = process_time()
+# clip="test3.mp4"
+# source_file="test.mp4"
+clip = "/content/drive/My Drive/O2I/Merinolam/Merinolam_FCT.mp4"
+source_file = "/content/drive/My Drive/O2I/20200117-131854.mp4"
 
+cap1 = cv2.VideoCapture(source_file)
+cap = cv2.VideoCapture(clip)
 total_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 total_frame1 = int(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
 print(total_frame, total_frame1)
-m = 0
 frames_list = []
 
-channelName = "Star Sports 1"
-typeOfAd = "AdTypeUnknown"
-BrandName = "Paytm"
-clipName = "adfile"
-adFrame = m
-# create logger
-lgr = logging.getLogger("logger")
-lgr.setLevel(logging.DEBUG)  # log all escalated at and above DEBUG
-# add a file handler
-fh = logging.FileHandler('path_of_your_log2.csv')
-fh.setLevel(logging.DEBUG)  # ensure all messages are logged to file
+miscInfo = {
+    "channelName": "Star Sports 1",
+    "videoName": "20200117-213035.mp4",
 
-# create a formatter and set the formatter for the handler.
-frmt = logging.Formatter('%(asctime)s,%(name)s,%(levelname)s,%(message)s')
-
-fh.setFormatter(frmt)
-
-# add the Handler to the logger
-lgr.addHandler(fh)
-
+    "adType": "Branding",
+    "videoFPS": 25,
+    "frameToRead": 1  # read every nth frame
+}
+baseTimestamp = getTimestampFromVideofile(miscInfo["videoName"])
+detectionInfo = {"classIndex": "0", "classes": "merinolam", "baseTimestamp": baseTimestamp,
+                 "frameDimensions": (256, 256)}
 fps = int(cap.get(cv2.CAP_PROP_FPS))
-
+should_restart = True
 print(fps)
-while cap.isOpened:
-
-    for i in range(total_frame):
-        cap.set(cv2.CAP_PROP_POS_FRAMES, i)
+cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+while cap1.isOpened or should_restart:
+    t1_start = process_time()
+    for i in range(int(cap.get(cv2.CAP_PROP_POS_FRAMES)), 500):
+        # cap.set(cv2.CAP_PROP_POS_FRAMES,i)
         ret, frame = cap.read()
-        for j in range(total_frame1):
-            cap1.set(cv2.CAP_PROP_POS_FRAMES, j)
+        start = process_time()
+        for j in range(int(cap1.get(cv2.CAP_PROP_POS_FRAMES)), total_frame1):
+            ts = process_time()
+            #    cap1.set(cv2.CAP_PROP_POS_FRAMES,j)
             ret1, frame1 = cap1.read()
-            diff = cv2.subtract(frame, frame1)
-            b, g, r = cv2.split(diff)
+            #              diff=cv2.subtract(frame,frame1)
+            #             b, g, r =cv2.split(diff)
             s = ssim(frame, frame1, multichannel=True)
-            if (cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0) or s >= .97:
-                print("matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--",
-                      cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
-
-                frames_list.append(cap.get(cv2.CAP_PROP_POS_FRAMES))
-                m += 1
-
+            if s >= .962:
+                print("matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--", cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
+                frames_list.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
+                t = cap1.get(cv2.CAP_PROP_POS_MSEC)
+                # time=(datetime.timedelta(milliseconds=t))
+                time_list.append(t)
                 break
             else:
+                print("not matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--", cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=",
+                      s)
+            stop = process_time()
+            tf = stop - start
+            # print("time to process single frame",tf)
+        t_stop = process_time()
+        time = t_stop - t1_start
+        print("time to match frames", time)
 
-                print("not matched", cap.get(cv2.CAP_PROP_POS_FRAMES),
-                      "--", cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
-
-    adStart = frames_list[1]
-    adEnd = frames_list[-1]
-    Duration = adEnd-adStart
-    adFrame = len(frames_list)
-
-    print("total frames matched=", m)
-    lgr.info("{},{},{},{},{},{},{},{}".format(channelName, typeOfAd,
-                                              BrandName, adStart, adEnd, Duration, clipName, adFrame))
-
-    break
+        updateDB(detectionInfo, miscInfo)
+    t1_stop = process_time()
+    print("time taken process approx 500 frames", t1_stop - t1_start)
+    if cap.get(cv2.CAP_PROP_POS_FRAMES) == total_frame:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        should_restart = False
+    if cap1.get(cv2.CAP_PROP_POS_FRAMES) == total_frame1:
+        break
+stop_time = process_time()
+extime = stop_time - start_time
+print("total time taken to execute", extime)
 print(frames_list)
