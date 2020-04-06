@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 from datetime import timedelta
 
+import detect_db
 adTrackerDirectory = "D:/Office/Backup/Projects Data/AI/AdTracker/"
 csvFilePath = "CSV/"
 csvFileName = "adtrack.csv"
@@ -37,7 +38,7 @@ def updateDB(detectionInfo, miscInfo):
         for i, classList in enumerate(detectionInfo["classIndex"]):
             if classList is not None:
                 classList = getStartEnd(classList)
-                for startEnd in classList:
+                for startEnd in getStartEnd(frames_list):
                     index = updateDBIndex()
                     sourceFile = miscInfo["videoName"].split(".")[0]
                     brandName = detectionInfo["classes"][i]
@@ -47,9 +48,9 @@ def updateDB(detectionInfo, miscInfo):
                     adFrameStart = startEnd[0]
                     adFrameEnd = startEnd[1]
                     adClipStart = timedelta(
-                        seconds=adFrameStart/miscInfo["frameToRead"])
+                        seconds=adFrameStart/miscInfo["videoFPS"])
                     adClipEnd = timedelta(
-                        seconds=adFrameEnd/miscInfo["frameToRead"])
+                        seconds=adFrameEnd/miscInfo["videoFPS"])
                     duration = (adClipEnd-adClipStart).total_seconds()
 
                     adStart = ((detectionInfo["baseTimestamp"]+adClipStart).time()
