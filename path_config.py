@@ -1,0 +1,26 @@
+import os
+import platform
+
+if platform.system() == "Windows":
+    adTrackerDir = "D:/Office/Backup/Projects Data/AI/AdTracker/"
+    gitRepoDir = os.path.join(
+        "D:/Office/Google Drive/Projects/AI/AdTracker", "O2i-Adtracker")
+elif platform.system() == "Linux":
+    adTrackerDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
+    gitRepoDir = os.path.join("~/", "O2i-Adtracker")
+
+dbDir = os.path.join(gitRepoDir, "CSV")
+dbFilePath = os.path.join(dbDir, "adtrack.csv")
+
+modelDir = os.path.join(adTrackerDir, "Model")
+originalVideoDir = os.path.join(adTrackerDir, "DTH", "Original")
+processedVideoDir = os.path.join(adTrackerDir, "DTH", "Processed")
+clipsDir = os.path.join(adTrackerDir, "DTH", "Ad Clips")
+
+brandingModelName = "49_Ads"
+brandingModelConfigPath = os.path.join(
+    modelDir, brandingModelName, brandingModelName + "_test.cfg")
+brandingModelClassesPath = os.path.join(
+    modelDir, brandingModelName, brandingModelName + ".names")
+brandingModelWeightsPath = os.path.join(
+    modelDir, brandingModelName, brandingModelName + "_last.weights")

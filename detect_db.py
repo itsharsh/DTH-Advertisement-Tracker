@@ -5,13 +5,10 @@ import platform
 import pandas as pd
 from datetime import timedelta
 
-if platform.system() == "Windows":
-    adTrackerDirectory = "D:/Office/Backup/Projects Data/AI/AdTracker/"
-elif platform.system() == "Linux":
-    adTrackerDirectory = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
+import path_config
 
-csvFilePath = "CSV"
-csvFileName = "adtrack.csv"
+adTrackerDirectory = path_config.adTrackerDirectory
+dbFilePath = path_config.dbFilePath
 
 
 def getStartEnd(nums):
@@ -23,7 +20,7 @@ def getStartEnd(nums):
 
 def updateDBIndex():
     try:
-        df = pd.read_csv(os.path.join(csvFilePath, csvFileName))
+        df = pd.read_csv(dbFilePath)
         return df["DB Index"].max()+1  # add 1 for counter
 
     except pd.errors.EmptyDataError:
@@ -32,7 +29,7 @@ def updateDBIndex():
 
 
 def updateCSV(row):
-    with open(os.path.join(csvFilePath, csvFileName), mode='a+', newline='') as csvFile:
+    with open(dbFilePath, mode='a+', newline='') as csvFile:
         fileWriter = csv.writer(csvFile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
         fileWriter.writerow(row)
@@ -83,8 +80,7 @@ def updateDB(detectionInfo, miscInfo):
                     updateCSV(row)
                     print("DB Updated")
     except FileNotFoundError:
-        csvCreate = open(os.path.join(
-            csvFilePath, csvFileName), mode='w', newline='')
+        csvCreate = open(dbFilePath, mode='w', newline='')
         updateDB(detectionInfo, miscInfo)
     except:
         print("Exception while updating DB: ", sys.exc_info())

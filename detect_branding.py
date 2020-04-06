@@ -9,22 +9,17 @@ from datetime import datetime
 from datetime import timedelta
 
 import detect_db
+import path_config
 
-modelName = "49_Ads"
+adTrackerDir = path_config.adTrackerDir
+modelDir = path_config.modelDir
+modelName = path_config.brandingModelName
+inputVideoDir = path_config.inputVideoDir
+outputVideoDir = path_config.outputVideoDir
 
-
-if platform.system() == "Windows":
-    adTrackerDirectory = "D:/Office/Backup/Projects Data/AI/AdTracker/"
-elif platform.system() == "Linux":
-    adTrackerDirectory = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
-
-modelDir = os.path.join(adTrackerDirectory, "Model")
-inputVideoPath = os.path.join(adTrackerDirectory, "DTH", "Original")
-outputVideoPath = os.path.join(adTrackerDirectory, "DTH", "Processed")
-
-configPath = os.path.join(modelDir, modelName, modelName + "_test.cfg")
-classesPath = os.path.join(modelDir, modelName, modelName + ".names")
-weightsPath = os.path.join(modelDir, modelName, modelName + "_last.weights")
+configPath = path_config.brandingModelConfigPath
+classesPath = path_config.brandingModelClassesPath
+weightsPath = path_config.brandingModelWeightsPath
 
 miscInfo = {
     "channelName": "Star Sports 1",
@@ -67,12 +62,12 @@ def captureFrames(videoName):
     classes, colors, net, ln = loadModel()
 
     videoRead = cv2.VideoCapture(os.path.join(
-        inputVideoPath, miscInfo["channelName"], videoName))
+        inputVideoDir, miscInfo["channelName"], videoName))
     # (W, H) = frame.shape[:2]
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    videoWrite = cv2.VideoWriter(os.path.join(outputVideoPath, videoName),
+    videoWrite = cv2.VideoWriter(os.path.join(outputVideoDir, videoName),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), miscInfo["videoFPS"], (W, H))
     try:
         prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() else cv2.CAP_PROP_FRAME_COUNT
