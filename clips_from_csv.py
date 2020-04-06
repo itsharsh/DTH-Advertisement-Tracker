@@ -1,12 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+#from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 channelNameList = ["Star Sports 1", "Star Sports 1 Hindi"]
 
-workingDirectory = "/home/vivek/Test"
-dataFilePath = os.path.join("/home/vivek/Test/CSV", "20200117-213035-17000-1f.csv")
+workingDirectory = "/home/vivek/Test/"
+dataFilePath = os.path.join(+workingDirectory+"CSV", "20200117-213035-17000-1f.csv")
 
 videoDataPath = os.path.join(workingDirectory, "Original")
 outputDataPath = os.path.join(workingDirectory, "Ad Clips")
@@ -45,7 +45,7 @@ for channelName in channelNameList:
     adDurationArray = np.array(dataset['Duration'])
     adClipFileName = np.array(dataset['Clip File Name'])
     adStartTime = np.array(dataset['Ad Frame Start'])
-    adEndTime = np.array(dataset['Ad Frame End'])
+    #adEndTime = np.array(dataset['Ad Frame End'])
     print(dataset)
 
     fileIndex = 0
