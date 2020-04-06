@@ -7,21 +7,19 @@ Original file is located at
     https://colab.research.google.com/drive/1Nb_ghT2D5B9dCU9cFUfcoZLCEvjkMryw
 """
 
-import cv2
-import logging
-from skimage.measure import compare_ssim as ssim
-
-videoPath = "D:\Office\Backup\Projects Data\AI\AdTracker\DTH"
-originalFileName = "20191218-135227.mp4"
-clipFileName = "20191218-135227-2137-2152-1Mg-Star Sports 1 Hindi.mp4"
-
-import cv2
-from skimage.measure import compare_ssim as ssim
-import logging
-import datetime
 import csv
+import datetime
+import cv2
+import logging
 from time import process_time
+from skimage.measure import compare_ssim as ssim
+
 import detect_db
+import path_config
+
+videoPath = path_config.originalVideoDir
+clipFileName = path_config.brandFCTFilePath
+
 start_time = process_time()
 # clip="test3.mp4"
 # source_file="test.mp4"
@@ -38,8 +36,7 @@ frames_list = []
 miscInfo = {
     "channelName": "Star Sports 1",
     "videoName": "20200117-213035.mp4",
-
-    "adType": "Branding",
+    "adType": "FCT",
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
@@ -64,7 +61,8 @@ while cap1.isOpened or should_restart:
             #             b, g, r =cv2.split(diff)
             s = ssim(frame, frame1, multichannel=True)
             if s >= .962:
-                print("matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--", cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
+                print("matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--",
+                      cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
                 frames_list.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
                 t = cap1.get(cv2.CAP_PROP_POS_MSEC)
                 # time=(datetime.timedelta(milliseconds=t))
@@ -80,7 +78,7 @@ while cap1.isOpened or should_restart:
         time = t_stop - t1_start
         print("time to match frames", time)
 
-        updateDB(detectionInfo, miscInfo)
+        detect_db.updateDB(detectionInfo, miscInfo)
     t1_stop = process_time()
     print("time taken process approx 500 frames", t1_stop - t1_start)
     if cap.get(cv2.CAP_PROP_POS_FRAMES) == total_frame:
