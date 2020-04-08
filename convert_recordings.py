@@ -24,17 +24,17 @@ def addStampToVideo(videoName,subdirs):
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    fps=int(video.get(cv2.CAP_PROP_FPS))
+    fps=int(videoRead.get(cv2.CAP_PROP_FPS))
     base=os.path.splitext(os.path.join(processedVideoDir,subdirs,videoname))[0]
     videoWrite = cv2.VideoWriter(os.path.join(base + ".mp4"),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'),fps, (W, H))
-    frameIndex=video.get(cv2.CAP_PROP_POS_FRAMES)
+    frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
     print(fps)
     while True:
         (grabbed, frame) = videoRead.read()
         if not grabbed:  # end of video
             break
-        frameIndex=video.get(cv2.CAP_PROP_POS_FRAMES)
+        frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
 
         frameTime = timedelta(
             seconds=frameIndex/fps)
@@ -49,17 +49,17 @@ def convertVideo(videoName,subdirs):
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    fps=int(video.get(cv2.CAP_PROP_FPS))
-    base=os.path.splitext(os.path.join(originalVideoDir,subdirs,videoname))[0]
+    fps=int(videoRead.get(cv2.CAP_PROP_FPS))
+    base=os.path.splitext(os.path.join(originalVideoDir,subdirs,videoName))[0]
     videoWrite = cv2.VideoWriter(os.path.join(base + ".mp4"),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'),fps, (W, H))
-    frameIndex=video.get(cv2.CAP_PROP_POS_FRAMES)
+    frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
     print(fps)
     while True:
         (grabbed, frame) = videoRead.read()
         if not grabbed:  # end of video
             break
-        frameIndex=video.get(cv2.CAP_PROP_POS_FRAMES)
+        frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
 
         frameTime = timedelta(
             seconds=frameIndex/fps)
