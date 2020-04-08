@@ -25,7 +25,7 @@ def addStampToVideo(videoName,subdirs):
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
     fps=int(videoRead.get(cv2.CAP_PROP_FPS))
-    base=os.path.splitext(os.path.join(processedVideoDir,subdirs,videoname))[0]
+    base=os.path.splitext(os.path.join(processedVideoDir,subdirs,videoName))[0]
     videoWrite = cv2.VideoWriter(os.path.join(base + ".mp4"),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'),fps, (W, H))
     frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
@@ -45,8 +45,8 @@ def addStampToVideo(videoName,subdirs):
 
 def convertVideo(videoName,subdirs):
     videoRead=cv2.VideoCapture(videoName)
-    baseTimestamp = getTimestampFromVideofile(videoName)
-    (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
+    #baseTimestamp = getTimestampFromVideofile(videoName)
+   (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
     fps=int(videoRead.get(cv2.CAP_PROP_FPS))
