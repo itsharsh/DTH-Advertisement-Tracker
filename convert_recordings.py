@@ -11,30 +11,34 @@ import path_config
 adTrackerDir = path_config.adTrackerDir
 originalVideoDir = path_config.originalVideoDir
 processedVideoDir = path_config.processedVideoDir
-recordingVideoDir =path_config.os.path.join(adTrackerDir, "DTH", "Recording")
-#VideoFiles = [f for f in listdir(originalVideoDir) if isfile(join(originalVideoDir, f))]
+recordingVideoDir = path_config.recordingVideoDir
+# VideoFiles = [f for f in listdir(originalVideoDir) if isfile(join(originalVideoDir, f))]
+
+
 def getTimestampFromVideofile(videoName):
     timestamp = videoName.split(".")[0]
     timestamp = datetime.strptime(timestamp, "%Y%m%d-%H%M%S")
     return timestamp
 
-def addStampToVideo(videoName,subdirs):
-    videoRead=cv2.VideoCapture(videoName)
+
+def addStampToVideo(videoName, subdirs):
+    videoRead = cv2.VideoCapture(videoName)
     baseTimestamp = getTimestampFromVideofile(videoName)
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    fps=int(videoRead.get(cv2.CAP_PROP_FPS))
-    base=os.path.splitext(os.path.join(processedVideoDir,subdirs,videoName))[0]
+    fps = int(videoRead.get(cv2.CAP_PROP_FPS))
+    base = os.path.splitext(os.path.join(
+        processedVideoDir, subdirs, videoName))[0]
     videoWrite = cv2.VideoWriter(os.path.join(base + ".mp4"),
-                                 cv2.VideoWriter_fourcc('m', 'p', '4', 'v'),fps, (W, H))
-    frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
+                                 cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
+    frameIndex = videoRead.get(cv2.CAP_PROP_POS_FRAMES)
     print(fps)
     while True:
         (grabbed, frame) = videoRead.read()
         if not grabbed:  # end of video
             break
-        frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
+        frameIndex = videoRead.get(cv2.CAP_PROP_POS_FRAMES)
 
         frameTime = timedelta(
             seconds=frameIndex/fps)
@@ -43,30 +47,33 @@ def addStampToVideo(videoName,subdirs):
                     cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
         videoWrite.write(frame)
 
-def convertVideo(videoName,subdirs):
-    videoRead=cv2.VideoCapture(videoName)
-    #baseTimestamp = getTimestampFromVideofile(videoName)
-   (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
+
+def convertVideo(videoName, subdirs):
+    videoRead = cv2.VideoCapture(videoName)
+    # baseTimestamp = getTimestampFromVideofile(videoName)
+    (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    fps=int(videoRead.get(cv2.CAP_PROP_FPS))
-    base=os.path.splitext(os.path.join(originalVideoDir,subdirs,videoName))[0]
+    fps = int(videoRead.get(cv2.CAP_PROP_FPS))
+    base = os.path.splitext(os.path.join(
+        originalVideoDir, subdirs, videoName))[0]
     videoWrite = cv2.VideoWriter(os.path.join(base + ".mp4"),
-                                 cv2.VideoWriter_fourcc('m', 'p', '4', 'v'),fps, (W, H))
-    frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
+                                 cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
+    frameIndex = videoRead.get(cv2.CAP_PROP_POS_FRAMES)
     print(fps)
     while True:
         (grabbed, frame) = videoRead.read()
         if not grabbed:  # end of video
             break
-        frameIndex=videoRead.get(cv2.CAP_PROP_POS_FRAMES)
+        frameIndex = videoRead.get(cv2.CAP_PROP_POS_FRAMES)
 
         frameTime = timedelta(
             seconds=frameIndex/fps)
         videoWrite.write(frame)
 
-for root,subdir,files in os.walk(recordingVideoDir,topdown=True):
+
+for root, subdir, files in os.walk(recordingVideoDir, topdown=True):
     for subdirs in subdir:
         for videoName in files:
-            convertVideo(videoName,subdirs)
-            addStampToVideo(videoName,subdirs)
+            convertVideo(videoName, subdirs)
+            addStampToVideo(videoName, subdirs)
