@@ -6,8 +6,8 @@ if platform.system() == "Windows":
     gitRepoDir = os.path.join(
         "D:/Office/Google Drive/Projects/AI/AdTracker", "O2i-Adtracker")
 elif platform.system() == "Linux":
-    adTrackerDir = "/mnt/6C8CA6790B328288/Projects/AI/AdTracker/"
-    gitRepoDir = os.path.join("~/", "O2i-Adtracker")
+    adTrackerDir = "/home/vivek/AdTracker/"
+    gitRepoDir = os.path.join("/home/vivek/", "AdTracker")
 
 dbDir = os.path.join(gitRepoDir, "CSV")
 dbFilePath = os.path.join(dbDir, "adtrack.csv")
@@ -23,7 +23,7 @@ brandingModelConfigPath = os.path.join(
 brandingModelClassesPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + ".names")
 brandingModelWeightsPath = os.path.join(
-    modelDir, brandingModelName, brandingModelName + "_last.weights")
+    modelDir, brandingModelName, brandingModelName + "_33927.weights")
 
 brandName = "Merinolam"
 brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
