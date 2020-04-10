@@ -1,2 +1,14 @@
-.pyc
-path_config.py
+Prepare Clips
+Dataset
+
+__pycache__
+.vscode
+
+*.csv
+*.mp4
+*.zip
+*.jpg
+*.jpeg
+*.txt
+*.names
+*.pyc
