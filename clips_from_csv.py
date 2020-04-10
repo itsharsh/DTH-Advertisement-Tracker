@@ -39,13 +39,10 @@ for channelName in channelNameList:
         dataset['Source File'], errors='coerce', format="%Y%m%d-%H%M%S")
     print(fileTimeStampArray)
 
-    # adStartTimeArray = pd.to_timedelta(dataset['Ad Start'])
-    # adEndTimeArray = pd.to_timedelta(dataset['Ad End'])
-    # adDurationArray = adEndTimeArray-adStartTimeArray
-    adDurationArray = np.array(dataset['Duration'])
     adClipFileName = np.array(dataset['Clip File Name'])
     adStartTime = np.array(dataset['Ad Frame Start'])
     adEndTime = np.array(dataset['Ad Frame End'])
+    adDurationArray = adEndTime-adStartTime
     print(dataset)
 
     fileIndex = 0
@@ -67,7 +64,7 @@ for channelName in channelNameList:
         terminalCommand = "ffmpeg -n -i \"{}/{}.mp4\" -ss {} -t {} \"{}/{}.mp4\"".format(
             processedVideoDir, str(fileNameArray[fileIndex]),
             str(adStartTime[fileIndex] * 0.040),
-            str(adDurationArray[fileIndex] * 0.040),
+            str(adDurationArray[fileIndex]*0.040),
             makeDirectoryPath, adClipFileName[fileIndex])
         print(terminalCommand)
         print(os.popen(terminalCommand).read())
