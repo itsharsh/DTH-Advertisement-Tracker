@@ -2,7 +2,7 @@ import os
 import platform
 
 if platform.system() == "Windows":
-    adTrackerDir = "D:/Office/Backup/Projects Data/AI/AdTracker/"
+    adTrackerDir = "D:/Test/"
     gitRepoDir = os.path.join(
         "D:/Office/Google Drive/Projects/AI/AdTracker", "O2i-Adtracker")
 elif platform.system() == "Linux":
@@ -15,6 +15,7 @@ dbFilePath = os.path.join(dbDir, "adtrack.csv")
 modelDir = os.path.join(adTrackerDir, "Model")
 originalVideoDir = os.path.join(adTrackerDir, "DTH", "Original")
 processedVideoDir = os.path.join(adTrackerDir, "DTH", "Processed")
+recordingVideoDir = os.path.join(adTrackerDir, "DTH", "Recordings")
 clipsDir = os.path.join(adTrackerDir, "DTH", "Ad Clips")
 
 brandingModelName = "49_Ads"

@@ -13,7 +13,7 @@ adTrackerDir = path_config.adTrackerDir
 originalVideoDir = path_config.originalVideoDir
 processedVideoDir = path_config.processedVideoDir
 recordingVideoDir = path_config.recordingVideoDir
-#VideoFiles = [f for f in listdir(originalVideoDir) if isfile(join(originalVideoDir, f))]
+# VideoFiles = [f for f in listdir(originalVideoDir) if isfile(join(originalVideoDir, f))]
 
 
 def getTimestampFromVideofile(videoName):
@@ -30,7 +30,7 @@ def addStampToVideo(videoPath, videoName, subFolder):
 
     fps = int(videoRead.get(cv2.CAP_PROP_FPS))
     base = os.path.splitext(os.path.join(
-        processedVideoDir,subFolder,videoName))[0]
+        processedVideoDir, subFolder, videoName))[0]
     videoWrite = cv2.VideoWriter(os.path.join(base + ".mp4"),
                                  cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     frameIndex = videoRead.get(cv2.CAP_PROP_POS_FRAMES)
