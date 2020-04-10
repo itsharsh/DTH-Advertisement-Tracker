@@ -2,9 +2,9 @@ import os
 import platform
 
 if platform.system() == "Windows":
-    adTrackerDir = "D:/Test/"
+    adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
     gitRepoDir = os.path.join(
-        "D:/Office/Google Drive/Projects/AI/AdTracker", "O2i-Adtracker")
+        "D:\\Office\\Google Drive\\Projects\\AI\\AdTracker", "O2i-Adtracker")
 elif platform.system() == "Linux":
     adTrackerDir = "/home/vivek/AdTracker/"
     gitRepoDir = os.path.join("/home/vivek/", "AdTracker")

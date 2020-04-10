@@ -3,25 +3,25 @@ import pandas as pd
 import numpy as np
 dataFilePath = "/home/vivek/AdTracker/CSV/adtrack.csv"
 workingDirectory = "/home/vivek/AdTraker/DTH/Ad Clips/"
-dataset=pd.read_csv(dataFilePath)
-channelNameList=np.array(dataset['Channel Name'])
-adClipFileName=np.array(dataset['Clip File Name'])
+dataset = pd.read_csv(dataFilePath)
+channelNameList = np.array(dataset['Channel Name'])
+adClipFileName = np.array(dataset['Clip File Name'])
 adBrandNameArray = np.array(dataset['Brand Name'])
-adStartTime=np.array(dataset['Ad Frame Start'])
-adEndTime=np.array(dataset['Ad Frame End'])
-prop=cv2.CAP_PROP_FRAME_COUNT
+adStartTime = np.array(dataset['Ad Frame Start'])
+adEndTime = np.array(dataset['Ad Frame End'])
+prop = cv2.CAP_PROP_FRAME_COUNT
 fileIndex = 0
-while (fileIndex<adClipFileName.size):
+while (fileIndex < adClipFileName.size):
     print(fileIndex)
-    path=workingDirectory+str(adBrandNameArray[fileIndex])+"/"+channelNameList[fileIndex]+"/"+adClipFileName[fileIndex]+".mp4"
+    path = workingDirectory+str(adBrandNameArray[fileIndex])+"/" + \
+        channelNameList[fileIndex]+"/"+adClipFileName[fileIndex]+".mp4"
     print(path)
-    video=cv2.VideoCapture(path)
-    print(adStartTime[fileIndex]*0.040,adEndTime[fileIndex]*0.040)
-    total=int(video.get(prop))
-    print("frames: ",total)
-    print("Duration",total*0.040)
-    fileIndex+=1
-
+    video = cv2.VideoCapture(path)
+    print(adStartTime[fileIndex]*0.040, adEndTime[fileIndex]*0.040)
+    total = int(video.get(prop))
+    print("frames: ", total)
+    print("Duration", total*0.040)
+    fileIndex += 1
 
 
 # import cv2
