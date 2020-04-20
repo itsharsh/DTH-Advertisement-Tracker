@@ -8,15 +8,14 @@ import platform
 from time import process_time
 import path_config
 
+#adTrackerDir = path_config.adTrackerDir
+#originalVideoDir = path_config.originalVideoDir
+#processedVideoDir = path_config.processedVideoDir
+#recordingVideoDir = path_config.recordingVideoDir
 
-adTrackerDir = path_config.adTrackerDir
-originalVideoDir = path_config.originalVideoDir
-processedVideoDir = path_config.processedVideoDir
-recordingVideoDir = path_config.recordingVideoDir
-
-#originalVideoDir = r"C:\Users\Hp\Desktop\comp\b"
-#processedVideoDir = r"C:\Users\Hp\Desktop\comp\c"
-#recordingVideoDir = r"C:\Users\Hp\Desktop\comp\a"
+originalVideoDir = r"C:\Users\Hp\Desktop\comp\b"
+processedVideoDir = r"C:\Users\Hp\Desktop\comp\c"
+recordingVideoDir = r"C:\Users\Hp\Desktop\comp\a"
 
 
 def getTimestampFromVideofile(videoName):
@@ -26,25 +25,40 @@ def getTimestampFromVideofile(videoName):
 
 
 def convert_AddStamp(videoPath, videoName, subFolder):
-    if not os.path.exists(os.path.join(processedVideoDir, subFolder)):
-        os.makedirs(os.path.join(processedVideoDir, subFolder))
+    print(videoPath)
+    print(videoName)
+    print(subFolder)
 
-    if not os.path.exists(os.path.join(originalVideoDir, subFolder)):
-        os.makedirs(os.path.join(originalVideoDir, subFolder))
     videoRead = cv2.VideoCapture(videoPath)
     baseTimestamp = getTimestampFromVideofile(videoName)
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
     fps = int(videoRead.get(cv2.CAP_PROP_FPS))
-    baseProcessed = os.path.splitext(os.path.join(
-        processedVideoDir, subFolder, videoName))[0]
+
+    # if subFolder=="Recordings"
+
+    if subFolder == "a":
+        baseProcessed = os.path.splitext(os.path.join(
+            processedVideoDir, videoName))[0]
+        baseOriginal = os.path.splitext(os.path.join(
+            originalVideoDir, videoName))[0]
+
+    else:
+        if not os.path.exists(os.path.join(processedVideoDir, subFolder)):
+            os.makedirs(os.path.join(processedVideoDir, subFolder))
+            print("primtyr")
+        if not os.path.exists(os.path.join(originalVideoDir, subFolder)):
+            os.makedirs(os.path.join(originalVideoDir, subFolder))
+
+        baseProcessed = os.path.splitext(os.path.join(
+            processedVideoDir, subFolder, videoName))[0]
+        baseOriginal = os.path.splitext(os.path.join(
+            originalVideoDir, subFolder, videoName))[0]
 
     processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed + ".mp4"),
                                           cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     frameIndex = videoRead.get(cv2.CAP_PROP_POS_FRAMES)
-    baseOriginal = os.path.splitext(os.path.join(
-        originalVideoDir, subFolder, videoName))[0]
 
     originalVideoWrite = cv2.VideoWriter(os.path.join(baseOriginal + ".mp4"),
                                          cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))

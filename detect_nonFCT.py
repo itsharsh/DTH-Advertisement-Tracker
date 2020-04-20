@@ -99,9 +99,6 @@ def detectNonFCT(template, videoFile):
 #     for i in classList:
 #        print(i)
 
-for files in os.listdir(videoPath):
-    videoFile = os.path.join(videoPath, files)
-    print(videoFile)
 
     for file in os.listdir(tempPath):
         print(file)
