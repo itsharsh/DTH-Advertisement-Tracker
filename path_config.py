@@ -26,11 +26,12 @@ brandingModelClassesPath = os.path.join(
 brandingModelWeightsPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + "_33927.weights")
 
-brandName = "Merinolam"
-brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
-
-brandFCTFilePath = os.path.join(brandDir, brandName+"*_FCT.mp4")
-brandNonFCTFilePath = os.path.join(brandDir, "*.jpeg")
-
 detectionDate = "20200117"
 detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
+detectionAd = []
+brandName = "Merinolam"
+
+brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
+
+brandFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
+brandNonFCTFilePath = os.path.join(brandDir, "Cropped_"+brandName, "*.jpeg")
