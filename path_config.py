@@ -4,7 +4,7 @@ import platform
 if platform.system() == "Windows":
     adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
     gitRepoDir = os.path.join(
-        "D:\\Office\\Google Drive\\Projects\\AI\\AdTracker", "O2i-Adtracker")
+        "D:\\", "Office", "Google Drive", "Projects", "AI", "AdTracker", "O2i-Adtracker")
 elif platform.system() == "Linux":
     adTrackerDir = "/home/vivek/AdTracker/"
     gitRepoDir = os.path.join("/home/vivek/", "AdTracker")
@@ -29,5 +29,8 @@ brandingModelWeightsPath = os.path.join(
 brandName = "Merinolam"
 brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
 
-brandFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
+brandFCTFilePath = os.path.join(brandDir, brandName+"*_FCT.mp4")
 brandNonFCTFilePath = os.path.join(brandDir, "*.jpeg")
+
+detectionDate = "20200117"
+detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
