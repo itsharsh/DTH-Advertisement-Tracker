@@ -3,6 +3,9 @@ Dataset
 
 __pycache__
 .vscode
+.idea
+Testing/Ajeet
+Testing/Vivek
 
 *.csv
 *.mp4
