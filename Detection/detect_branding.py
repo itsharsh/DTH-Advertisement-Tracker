@@ -5,11 +5,11 @@ import time
 import imutils
 import platform
 import numpy as np
-from datetime import datetime
 from datetime import timedelta
 
-import detect_db
+import Detection
 import path_config
+from DB import update_db as DB
 
 adTrackerDir = path_config.adTrackerDir
 modelDir = path_config.modelDir
@@ -39,12 +39,6 @@ def init():
     pass
 
 
-def getTimestampFromVideofile(videoName):
-    timestamp = videoName.split(".")[0]
-    timestamp = datetime.strptime(timestamp, "%Y%m%d-%H%M%S")
-    return timestamp
-
-
 def loadModel():
     classes = open(classesPath).read().strip().split("\n")
     np.random.seed(len(classes))
@@ -58,7 +52,7 @@ def loadModel():
 
 
 def captureFrames(videoName):
-    baseTimestamp = getTimestampFromVideofile(videoName)
+    baseTimestamp = Detection.getTimestampFromVideofile(videoName)
     classes, colors, net, ln = loadModel()
 
     videoRead = cv2.VideoCapture(os.path.join(
@@ -173,8 +167,12 @@ def captureFrames(videoName):
     return detectionInfo
 
 
-if __name__ == "__main__":
+def run():
     init()
     detectionInfo = captureFrames(miscInfo["videoName"])
-    detect_db.updateDB(detectionInfo, miscInfo)
+    DB.update(detectionInfo, miscInfo)
     # runDetection(frame)  will be used after implementing pipelines
+
+
+if __name__ == "__main__":
+    run()

@@ -1,13 +1,11 @@
-
 import os
 import cv2
 import numpy as np
 from time import process_time
 
-import detect_db
-import detect_branding
+import Detection
 import path_config
-
+from DB import update_db as DB
 
 max_list1 = []
 max_list2 = []
@@ -92,10 +90,10 @@ def detectNonFCT(template, videoFile):
 #            r"C:\Users\Hp\Desktop\20200117-131854ss1.mp4")
 
 
-#classList = detect_db.getStartEnd(frame_list)
+#classList = DB.getStartEnd(frame_list)
 # for i, classList in enumerate(aston_frame_list):
 #   if classList is not None:
-#      classList = detect_db.getStartEnd(classList)
+#      classList = DB.getStartEnd(classList)
 #     for i in classList:
 #        print(i)
 

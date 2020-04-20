@@ -35,7 +35,7 @@ def updateCSV(row):
         fileWriter.writerow(row)
 
 
-def updateDB(detectionInfo, miscInfo):
+def update(detectionInfo, miscInfo):
     try:
         for i, classList in enumerate(detectionInfo["classIndex"]):
             if classList is not None:
@@ -81,6 +81,6 @@ def updateDB(detectionInfo, miscInfo):
                     print("DB Updated")
     except FileNotFoundError:
         csvCreate = open(dbFilePath, mode='w', newline='')
-        updateDB(detectionInfo, miscInfo)
+        update(detectionInfo, miscInfo)
     except:
         print("Exception while updating DB: ", sys.exc_info())

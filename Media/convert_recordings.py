@@ -1,13 +1,13 @@
 import os
 import cv2
+import platform
+from os import listdir
+from time import process_time
 from datetime import datetime
 from datetime import timedelta
-from os import listdir
 from os.path import isfile, join
-import platform
-from time import process_time
-import path_config
 
+import path_config
 
 adTrackerDir = path_config.adTrackerDir
 originalVideoDir = path_config.originalVideoDir

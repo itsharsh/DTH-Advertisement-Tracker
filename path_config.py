@@ -2,14 +2,16 @@ import os
 import platform
 
 if platform.system() == "Windows":
-    adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
+    # adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
+    adTrackerDir = os.path.join(
+        "D:\\", "Office", "Backup", "Projects Data", "AI", "AdTracker")
     gitRepoDir = os.path.join(
-        "D:\\", "Office", "Google Drive", "Projects", "AI", "AdTracker", "O2i-Adtracker")
+        "D:\\", "Office", "Google Drive", "Projects", "AI", "AdTracker", "Adtracker")
 elif platform.system() == "Linux":
     adTrackerDir = "/home/vivek/AdTracker/"
     gitRepoDir = os.path.join("/home/vivek/", "AdTracker")
 
-dbDir = os.path.join(gitRepoDir, "CSV")
+dbDir = os.path.join(gitRepoDir, "DB")
 dbFilePath = os.path.join(dbDir, "adtrack.csv")
 
 modelDir = os.path.join(adTrackerDir, "Model")
@@ -24,7 +26,7 @@ brandingModelConfigPath = os.path.join(
 brandingModelClassesPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + ".names")
 brandingModelWeightsPath = os.path.join(
-    modelDir, brandingModelName, brandingModelName + "_33927.weights")
+    modelDir, brandingModelName, brandingModelName + "_last.weights")
 
 detectionDate = "20200117"
 detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
