@@ -14,6 +14,7 @@ import logging
 from time import process_time
 from skimage.measure import compare_ssim as ssim
 
+import detect_branding
 import detect_db
 import path_config
 
@@ -32,7 +33,7 @@ total_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 total_frame1 = int(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
 print(total_frame, total_frame1)
 frames_list = []
-
+list1 = []
 miscInfo = {
     "channelName": "Star Sports 1",
     "videoName": "20200117-213035.mp4",
@@ -40,8 +41,9 @@ miscInfo = {
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
-baseTimestamp = getTimestampFromVideofile(miscInfo["videoName"])
-detectionInfo = {"classIndex": "0", "classes": "merinolam", "baseTimestamp": baseTimestamp,
+baseTimestamp = detect_branding.getTimestampFromVideofile(
+    miscInfo["videoName"])
+detectionInfo = {"classIndex": frames_list[], "classes": "merinolam", "baseTimestamp": baseTimestamp,
                  "frameDimensions": (256, 256)}
 fps = int(cap.get(cv2.CAP_PROP_FPS))
 should_restart = True
@@ -63,14 +65,19 @@ while cap1.isOpened or should_restart:
             if s >= .962:
                 print("matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--",
                       cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
-                frames_list.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
+                list1.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
                 t = cap1.get(cv2.CAP_PROP_POS_MSEC)
                 # time=(datetime.timedelta(milliseconds=t))
-                time_list.append(t)
+                # time_list.append(t)
                 break
             else:
                 print("not matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--", cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=",
                       s)
+                if len(list1) > 0:
+                    list2 = list1
+                    frames_list.append(list2)
+                    print(appended)
+                    list1 = []
             stop = process_time()
             tf = stop - start
             # print("time to process single frame",tf)
