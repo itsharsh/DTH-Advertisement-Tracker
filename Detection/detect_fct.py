@@ -13,18 +13,17 @@ from DB import update_db as DB
 videoPath = path_config.originalVideoDir
 clipFileName = path_config.brandFCTFilePath
 
-frames_list = []
+ssimThreshold = .962
 
 miscInfo = {
-    "channelName": "tobe",
-    "videoName": "20200110-131854.mp4",
+    "channelName": "",
+    "videoName": "",
     "adType": "FCT",
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
-baseTimestamp = Detection.getTimestampFromVideofile(
-    miscInfo["videoName"])
-detectionInfo = {"classIndex": frames_list, "classes": path_config.brandName, "baseTimestamp": baseTimestamp,
+
+detectionInfo = {"classIndex": None, "classes": path_config.brandName, "baseTimestamp": "",
                  "frameDimensions": (256, 256)}
 
 
@@ -42,47 +41,52 @@ def detectFCT(videoFile, clipFile, start_time):
     print(fps)
 #    cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
     while cap1.isOpened or should_restart:
+        frames_list = []
         t1_start = process_time()
         for i in range(int(cap.get(cv2.CAP_PROP_POS_FRAMES)), total_frame):
             # cap.set(cv2.CAP_PROP_POS_FRAMES,i)
             ret, frame = cap.read()
-            start = process_time()
             for j in range(int(cap1.get(cv2.CAP_PROP_POS_FRAMES)), total_frame1):
                 ts = process_time()
                 ret1, frame1 = cap1.read()
-                s = ssim(frame, frame1, multichannel=True)
-                if s >= .962:
-                    print("matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--",
-                          cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=", s)
-                    list1.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
 
-                    break
+                start = process_time()
+                s = ssim(frame, frame1, multichannel=True)
+                stop = process_time()
+                tf = stop - start
+                msg = ""
+                if s >= ssimThreshold:
+                    msg = "Matched"
+                    list1.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
                 else:
-                    print("not matched", cap.get(cv2.CAP_PROP_POS_FRAMES), "--", cap1.get(cv2.CAP_PROP_POS_FRAMES), "ssim=",
-                          s)
+                    msg = "Not Matched"
                     if len(list1) > 0:
                         list2 = list1
                         frames_list.append(list2)
                         print("appended")
                         list1 = []
-                stop = process_time()
-                tf = stop - start
-                # print("time to process single frame",tf)
-            t_stop = process_time()
-            time = t_stop - t1_start
-            print("time to match frames", time)
 
+                print("Time Taken: {:.2f}\tFPS: {:.2f}\t{}\t{} : {}\t SSIM: {:.8f}".format(
+                    round(tf, 2), round(1/tf, 2), msg, cap.get(cv2.CAP_PROP_POS_FRAMES), cap1.get(cv2.CAP_PROP_POS_FRAMES), round(s, 8)))
+
+                if (msg == "Matched"):
+                    break
+        detectionInfo["classIndex"] = frames_list
+        print(detectionInfo)
+        print(miscInfo)
+        print(frames_list)
         DB.update(detectionInfo, miscInfo)
         t1_stop = process_time()
-        print("time taken process approx 500 frames", t1_stop - t1_start)
+        print("Time Taken to process FCT Clip: ", t1_stop - t1_start)
         if cap.get(cv2.CAP_PROP_POS_FRAMES) == total_frame:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             should_restart = False
         if cap1.get(cv2.CAP_PROP_POS_FRAMES) == total_frame1:
             break
+        break
     stop_time = process_time()
     extime = stop_time - start_time
-    print("total time taken to execute", extime)
+    print("Total Time Taken: ", extime)
     print(frames_list)
 
 
@@ -96,6 +100,8 @@ def run():
 
             if file.split("-")[0] == path_config.detectionDate:
                 miscInfo["videoName"] = file
+                detectionInfo["baseTimestamp"] = Detection.getTimestampFromVideofile(
+                    miscInfo["videoName"])
                 videoFile = os.path.join(videoPath, folder, file)
                 start_time = process_time()
                 detectFCT(videoFile, clipFileName, start_time)
@@ -103,4 +109,5 @@ def run():
 # print(detectionInfo)
 
 
-run()
+if __name__ == "__main__":
+    run()
