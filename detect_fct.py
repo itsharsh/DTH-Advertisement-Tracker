@@ -42,15 +42,15 @@ frames_list = []
 
 
 miscInfo = {
-    "channelName": "Star Sports 1",
-    "videoName": "20200117-213035.mp4",
+    "channelName": "tobe",
+    "videoName": "20200110-131854.mp4",
     "adType": "FCT",
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
 baseTimestamp = detect_branding.getTimestampFromVideofile(
     miscInfo["videoName"])
-detectionInfo = {"classIndex": frames_list, "classes": "merinolam", "baseTimestamp": baseTimestamp,
+detectionInfo = {"classIndex": frames_list, "classes": path_config.brandName, "baseTimestamp": baseTimestamp,
                  "frameDimensions": (256, 256)}
 
 
@@ -98,7 +98,7 @@ def detectFCT(videoFile, clipFile):
             time = t_stop - t1_start
             print("time to match frames", time)
 
-        detect_db.updateDB(detectionInfo, miscInfo)
+        #detect_db.updateDB(detectionInfo, miscInfo)
         t1_stop = process_time()
         print("time taken process approx 500 frames", t1_stop - t1_start)
         if cap.get(cv2.CAP_PROP_POS_FRAMES) == total_frame:
@@ -112,9 +112,25 @@ def detectFCT(videoFile, clipFile):
     print(frames_list)
 
 
-for root, subdir, files in os.walk(videoPath, topdown=True):
-    for video in files:
-        videoFile = os.path.join(root, video)
-        print(videoFile)
-        start_time = process_time()
-        detectFCT(videoFile, clipFileName)
+# for root, subdir, files in os.walk(videoPath, topdown=True):
+    # for video in files:
+    #videoFile = os.path.join(root, video)
+    # print(videoFile)
+    start_time = process_time()
+    # detectFCT(videoFile, clipFileName)
+
+
+for i, folder in enumerate(path_config.detectionChannel):
+
+    miscInfo["channelName"] = folder
+
+    file_list = os.listdir(os.path.join(videoPath, folder))
+    for file in file_list:
+
+        if file.split("-")[0] == path_config.detectionDate:
+            miscInfo["videoName"] = file
+            videoFile = os.path.join(videoPath, folder, file)
+            start_time = process_time()
+            detectFCT(videoFile, clipFileName)
+# print(miscInfo)
+# print(detectionInfo)
