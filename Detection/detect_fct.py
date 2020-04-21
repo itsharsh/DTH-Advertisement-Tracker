@@ -69,7 +69,7 @@ def detectFCT(videoFile, clipFile, start_time):
                         frames_list.append(list2)
                         print("appended")
                         list1 = []
-                        # print(frames_list)
+                        print(frames_list)
                 print("Time Taken: {:.2f}\tFPS: {:.2f}\t{}\t{} : {}\t SSIM: {:.8f}".format(
                     round(tf, 2), round(1/tf, 2), msg, cap.get(cv2.CAP_PROP_POS_FRAMES), cap1.get(cv2.CAP_PROP_POS_FRAMES), round(s, 8)))
 
@@ -85,6 +85,12 @@ def detectFCT(videoFile, clipFile, start_time):
         print("Time Taken to process FCT Clip: ", t1_stop - t1_start)
         if cap.get(cv2.CAP_PROP_POS_FRAMES) == total_frame:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            if len(list1) > 0:
+                list2 = list1
+                frames_list.append(list2)
+                print("appended")
+                list1 = []
+                print(frames_list)
             #should_restart = False
 
         if cap1.get(cv2.CAP_PROP_POS_FRAMES) == total_frame1:
