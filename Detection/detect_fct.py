@@ -13,7 +13,7 @@ from DB import update_db as DB
 videoPath = path_config.originalVideoDir
 clipFileName = path_config.brandFCTFilePath
 
-ssimThreshold = .962
+ssimThreshold = .952
 
 miscInfo = {
     "channelName": "",
@@ -32,6 +32,8 @@ def detectFCT(videoFile, clipFile, start_time):
     cap1 = cv2.VideoCapture(videoFile)
     cap = cv2.VideoCapture(clipFile)
     total_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    if total_frame == 0:
+        return print("file not found")
     total_frame1 = int(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
     print(total_frame, total_frame1)
     list1 = []
@@ -39,7 +41,9 @@ def detectFCT(videoFile, clipFile, start_time):
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     should_restart = True
     print(fps)
-#    cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+#    frames_list = []
+    cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+    should_restart = True
     while cap1.isOpened or should_restart:
         frames_list = []
         t1_start = process_time()
@@ -65,7 +69,7 @@ def detectFCT(videoFile, clipFile, start_time):
                         frames_list.append(list2)
                         print("appended")
                         list1 = []
-
+                        # print(frames_list)
                 print("Time Taken: {:.2f}\tFPS: {:.2f}\t{}\t{} : {}\t SSIM: {:.8f}".format(
                     round(tf, 2), round(1/tf, 2), msg, cap.get(cv2.CAP_PROP_POS_FRAMES), cap1.get(cv2.CAP_PROP_POS_FRAMES), round(s, 8)))
 
@@ -75,15 +79,19 @@ def detectFCT(videoFile, clipFile, start_time):
         print(detectionInfo)
         print(miscInfo)
         print(frames_list)
-        DB.update(detectionInfo, miscInfo)
+    #    DB.update(detectionInfo, miscInfo)
+    #    frames_list = []
         t1_stop = process_time()
         print("Time Taken to process FCT Clip: ", t1_stop - t1_start)
         if cap.get(cv2.CAP_PROP_POS_FRAMES) == total_frame:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            should_restart = False
+            #should_restart = False
+
         if cap1.get(cv2.CAP_PROP_POS_FRAMES) == total_frame1:
+            cap1.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            should_restart = True
             break
-        break
+    DB.update(detectionInfo, miscInfo)
     stop_time = process_time()
     extime = stop_time - start_time
     print("Total Time Taken: ", extime)
