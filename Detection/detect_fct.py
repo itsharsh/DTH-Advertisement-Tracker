@@ -42,7 +42,7 @@ def detectFCT(videoFile, clipFile, start_time):
     should_restart = True
     print(fps)
 #    frames_list = []
-    cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+  #  cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
     should_restart = True
     while cap1.isOpened or should_restart:
         frames_list = []

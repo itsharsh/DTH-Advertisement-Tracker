@@ -2,9 +2,9 @@ import os
 import platform
 
 if platform.system() == "Windows":
-    # adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
-    adTrackerDir = os.path.join(
-        "D:\\", "Office", "Backup", "Projects Data", "AI", "AdTracker")
+    adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
+    # adTrackerDir = os.path.join(
+    # "D:\\", "Office", "Backup", "Projects Data", "AI", "AdTracker")
     gitRepoDir = os.path.join(
         "D:\\", "Office", "Google Drive", "Projects", "AI", "AdTracker", "Adtracker")
 elif platform.system() == "Linux":
@@ -28,7 +28,7 @@ brandingModelClassesPath = os.path.join(
 brandingModelWeightsPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + "_last.weights")
 
-detectionDate = "20200117"
+detectionDate = "20191211"
 detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
 detectionAd = []
 brandName = "Merinolam"
