@@ -22,8 +22,8 @@ miscInfo = {
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
-
-detectionInfo = {"classIndex": None, "classes": path_config.brandName, "baseTimestamp": "",
+classes_list = []
+detectionInfo = {"classIndex": None, "classes": classes_list, "baseTimestamp": "",
                  "frameDimensions": (256, 256)}
 
 
@@ -37,7 +37,7 @@ def detectFCT(videoFile, clipFile, start_time):
     total_frame1 = int(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
     print(total_frame, total_frame1)
     list1 = []
-
+    brand_name = path_config.brandName
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     should_restart = True
     print(fps)
@@ -62,6 +62,7 @@ def detectFCT(videoFile, clipFile, start_time):
                 if s >= ssimThreshold:
                     msg = "Matched"
                     list1.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
+                    classes_list.append(brand_name)
                 else:
                     msg = "Not Matched"
                     if len(list1) > 0:
