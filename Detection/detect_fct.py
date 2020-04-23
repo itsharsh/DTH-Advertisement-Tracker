@@ -22,13 +22,13 @@ miscInfo = {
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
-classes_list = []
-detectionInfo = {"classIndex": None, "classes": classes_list, "baseTimestamp": "",
+
+detectionInfo = {"classIndex": None, "classes": None, "baseTimestamp": "",
                  "frameDimensions": (256, 256)}
 
 
 def detectFCT(videoFile, clipFile, start_time):
-
+    classes_list = []
     cap1 = cv2.VideoCapture(videoFile)
     cap = cv2.VideoCapture(clipFile)
     total_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -76,6 +76,7 @@ def detectFCT(videoFile, clipFile, start_time):
 
                 if (msg == "Matched"):
                     break
+
         detectionInfo["classIndex"] = frames_list
         print(detectionInfo)
         print(miscInfo)
@@ -98,6 +99,7 @@ def detectFCT(videoFile, clipFile, start_time):
             cap1.set(cv2.CAP_PROP_POS_FRAMES, 0)
             should_restart = True
             break
+    detectionInfo["classes"] = classes_list
     DB.update(detectionInfo, miscInfo)
     stop_time = process_time()
     extime = stop_time - start_time

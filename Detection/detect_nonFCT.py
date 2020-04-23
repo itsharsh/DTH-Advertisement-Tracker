@@ -21,8 +21,7 @@ miscInfo = {
     "videoFPS": 25,
     "frameToRead": 1  # read every nth frame
 }
-classes_list = []
-detectionInfo = {"classIndex": None, "classes": classes_list, "baseTimestamp": "",
+detectionInfo = {"classIndex": None, "classes": None, "baseTimestamp": "",
                  "frameDimensions": (256, 256)}
 
 
@@ -30,6 +29,7 @@ threshold = .58
 
 
 def detectNonFCT_astonBand(template, videoFile):
+    classes_list = []
     fstart = process_time()
     miscInfo["adType"] = "astonBand"
     print("detection started")
@@ -81,6 +81,7 @@ def detectNonFCT_astonBand(template, videoFile):
         print("Time Taken: {:.2f}\tFPS: \t{}\t{} : {}\t {:.8f}".format(
             round(tf, 2), msg, miscInfo["adType"], frameNo, round(max_val, 8)))
     print(aston_frame_list)
+    detectionInfo["classes"] = classes_list
     detectionInfo["classIndex"] = aston_frame_list
     DB.update(detectionInfo, miscInfo)
     fstop = process_time()
@@ -88,6 +89,7 @@ def detectNonFCT_astonBand(template, videoFile):
 
 
 def detectNonFCT_LBand(template, template1, videoFile):
+    classes_list = []
     fstart = process_time()
     miscInfo["adType"] = "LBand"
     print("detection started")
@@ -148,6 +150,7 @@ def detectNonFCT_LBand(template, template1, videoFile):
             cv2.destroyAllWindows()
 
     print(LBand_frame_list)
+    detectionInfo["classes"] = classes_list
     detectionInfo["classIndex"] = LBand_frame_list
     DB.update(detectionInfo, miscInfo)
     fstop = process_time()
