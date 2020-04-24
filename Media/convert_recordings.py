@@ -7,18 +7,12 @@ from datetime import datetime
 from datetime import timedelta
 from os.path import isfile, join
 
-<<<<<<< HEAD:convert_recordings.py
-#adTrackerDir = path_config.adTrackerDir
-#originalVideoDir = path_config.originalVideoDir
-#processedVideoDir = path_config.processedVideoDir
-#recordingVideoDir = path_config.recordingVideoDir
-=======
 import path_config
->>>>>>> a25917f12bf6cd3c8c08000b11cf8ce8c992cc67:Media/convert_recordings.py
 
-originalVideoDir = r"C:\Users\Hp\Desktop\comp\b"
-processedVideoDir = r"C:\Users\Hp\Desktop\comp\c"
-recordingVideoDir = r"C:\Users\Hp\Desktop\comp\a"
+adTrackerDir = path_config.adTrackerDir
+originalVideoDir = path_config.originalVideoDir
+processedVideoDir = path_config.processedVideoDir
+recordingVideoDir = path_config.recordingVideoDir
 
 
 def getTimestampFromVideofile(videoName):
@@ -89,19 +83,20 @@ def convert_AddStamp(videoPath, videoName, subFolder):
     print("time to process whole task=", clip_time-clip_startTime)
 
 
-for root, subdir, files in os.walk(recordingVideoDir, topdown=True):
-    for video in files:
-        videoPath = os.path.join(root, video)
-        if platform.system() == "Windows":
-            print(platform.system())
-            videoName = videoPath.split("\\")[-1]
-            subFolder = videoPath.split("\\")[-2]
-            clip_startTime = process_time()
-            convert_AddStamp(videoPath, videoName, subFolder)
+def run():
+    for root, subdir, files in os.walk(recordingVideoDir, topdown=True):
+        for video in files:
+            videoPath = os.path.join(root, video)
+            if platform.system() == "Windows":
+                print(platform.system())
+                videoName = videoPath.split("\\")[-1]
+                subFolder = videoPath.split("\\")[-2]
+                clip_startTime = process_time()
+                convert_AddStamp(videoPath, videoName, subFolder)
 
-        elif platform.system() == "Linux":
-            print(platform.system())
-            videoName = videoPath.split("/")[-1]
-            subFolder = videoPath.split("/")[-2]
-            clip_startTime = process_time()
-            convert_AddStamp(videoPath, videoName, subFolder)
+            elif platform.system() == "Linux":
+                print(platform.system())
+                videoName = videoPath.split("/")[-1]
+                subFolder = videoPath.split("/")[-2]
+                clip_startTime = process_time()
+                convert_AddStamp(videoPath, videoName, subFolder)
