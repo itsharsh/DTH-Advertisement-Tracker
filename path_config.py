@@ -11,7 +11,7 @@ elif platform.system() == "Linux":
         adTrackerDir = os.path.join(
             "/media", "harsh", "HDD", "Projects Data", "AdTracker")
     elif(os.getlogin() == "vivek"):
-        adTrackerDir = "/home/vivek/AdTracker/"
+        adTrackerDir = "/home/vivek/Projects Data/AdTracker/"
 
 dbFilePath = os.path.join(adTrackerDir, "DB", "adtrack.csv")
 
@@ -37,4 +37,4 @@ brandName = "Merinolam"
 brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
 
 brandFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
-brandNonFCTFilePath = os.path.join(brandDir, "Cropped_"+brandName, "*.jpeg")
+brandNonFCTFilePath = os.path.join(brandDir, "Cropped_"+brandName)
