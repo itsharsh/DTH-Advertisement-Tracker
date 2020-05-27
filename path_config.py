@@ -2,23 +2,24 @@ import os
 import platform
 
 if platform.system() == "Windows":
-    adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
-    # adTrackerDir = os.path.join(
-    # "D:\\", "Office", "Backup", "Projects Data", "AI", "AdTracker")
-    gitRepoDir = os.path.join(
-        "D:\\", "Office", "Google Drive", "Projects", "AI", "AdTracker", "Adtracker")
+    if(os.getlogin() == "Harsh"):
+        adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
+    elif(os.getlogin() == "Ajeet"):
+        adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
 elif platform.system() == "Linux":
-    adTrackerDir = "/home/vivek/AdTracker/"
-    gitRepoDir = os.path.join("/home/vivek/", "AdTracker")
+    if(os.getlogin() == "harsh"):
+        adTrackerDir = os.path.join(
+            "/media", "harsh", "HDD", "Projects Data", "AdTracker")
+    elif(os.getlogin() == "vivek"):
+        adTrackerDir = "/home/vivek/AdTracker/"
 
-dbDir = os.path.join(gitRepoDir, "DB")
-dbFilePath = os.path.join(dbDir, "adtrack.csv")
+dbFilePath = os.path.join(adTrackerDir, "DB", "adtrack.csv")
 
 modelDir = os.path.join(adTrackerDir, "Model")
-originalVideoDir = os.path.join(adTrackerDir, "DTH", "Original")
-processedVideoDir = os.path.join(adTrackerDir, "DTH", "Processed")
-recordingVideoDir = os.path.join(adTrackerDir, "DTH", "Recordings")
-clipsDir = os.path.join(adTrackerDir, "DTH", "Ad Clips")
+originalVideoDir = os.path.join(adTrackerDir, "Videos", "Original")
+processedVideoDir = os.path.join(adTrackerDir, "Videos", "Processed")
+recordingVideoDir = os.path.join(adTrackerDir, "Videos", "Recordings")
+clipsDir = os.path.join(adTrackerDir, "Videos", "Ad Clips")
 
 brandingModelName = "49_Ads"
 brandingModelConfigPath = os.path.join(
