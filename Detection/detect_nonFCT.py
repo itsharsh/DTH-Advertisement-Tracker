@@ -50,14 +50,6 @@ def detect_NonFCT(videoFile):
         # print("readingFrame")
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         if frameNo == totalFrame:
-            if len(list1) > 0:
-
-                frames_List.append(list1)
-                list1 = []
-
-            detectionInfo["classes"] = classes_list
-            detectionInfo["classIndex"] = frames_List
-            DB.update(detectionInfo, miscInfo)
             break
 
         ret, frame = video.read()
@@ -98,9 +90,14 @@ def detect_NonFCT(videoFile):
 
         else:
             msg = "nothing matched"
-            if len(list1) > 0:
+            if len(list1) > 50:
                 frames_List.append(list1)
-                list1 = []
+                detectionInfo["classes"] = classes_list
+                detectionInfo["classIndex"] = frames_List
+                DB.update(detectionInfo, miscInfo)
+                frames_List = []
+                #list1 = []
+            list1 = []
 
         stop = process_time()
         tf = stop-start
