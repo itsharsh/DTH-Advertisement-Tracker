@@ -17,8 +17,10 @@ dbFilePath = os.path.join(adTrackerDir, "DB", "adtrack.csv")
 
 modelDir = os.path.join(adTrackerDir, "Model")
 originalVideoDir = os.path.join(adTrackerDir, "Videos", "Original")
-processedVideoDir = os.path.join(adTrackerDir, "Videos", "Processed")
 recordingVideoDir = os.path.join(adTrackerDir, "Videos", "Recordings")
+processedVideoDir = os.path.join(adTrackerDir, "Videos", "Processed")
+detectionProcessedVideoDir = os.path.join(
+    adTrackerDir, "Videos", "Detection Processed")
 clipsDir = os.path.join(adTrackerDir, "Videos", "Ad Clips")
 
 brandingModelName = "49_Ads"
@@ -29,7 +31,7 @@ brandingModelClassesPath = os.path.join(
 brandingModelWeightsPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + "_last.weights")
 
-detectionDate = "20191211"
+detectionDate = "20200117"
 detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
 detectionAd = []
 brandName = "Merinolam"
