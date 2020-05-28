@@ -62,8 +62,10 @@ def captureFrames(videoName):
     # (W, H) = frame.shape[:2]
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-
-    videoWrite = cv2.VideoWriter(os.path.join(detectionProcessedVideoDir, "Branding",
+    makeDirectoryCommand = "mkdir -p \"{}\"".format(os.path.join(detectionProcessedVideoDir,
+                                              miscInfo["channelName"]))
+    os.system(makeDirectoryCommand)
+    videoWrite = cv2.VideoWriter(os.path.join(detectionProcessedVideoDir,
                                               miscInfo["channelName"], videoName), cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), miscInfo["videoFPS"], (W, H))
     try:
         prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() else cv2.CAP_PROP_FRAME_COUNT
