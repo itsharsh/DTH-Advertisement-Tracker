@@ -11,7 +11,8 @@ elif platform.system() == "Linux":
         adTrackerDir = os.path.join(
             "/media", "harsh", "HDD", "Projects Data", "AdTracker")
     elif(os.getlogin() == "vivek"):
-        adTrackerDir = "/home/vivek/Projects Data/AdTracker/"
+        adTrackerDir = os.path.join(
+            "/home", "vivek", "Projects Data", "AdTracker")
 
 dbFilePath = os.path.join(adTrackerDir, "DB", "adtrack.csv")
 
@@ -20,7 +21,7 @@ originalVideoDir = os.path.join(adTrackerDir, "Videos", "Original")
 recordingVideoDir = os.path.join(adTrackerDir, "Videos", "Recordings")
 processedVideoDir = os.path.join(adTrackerDir, "Videos", "Processed")
 detectionProcessedVideoDir = os.path.join(
-    adTrackerDir, "Videos", "Detection Processed")
+    adTrackerDir, "Videos", "Detection Processed", "Branding")
 clipsDir = os.path.join(adTrackerDir, "Videos", "Ad Clips")
 
 brandingModelName = "49_Ads"
