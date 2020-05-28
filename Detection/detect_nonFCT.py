@@ -92,7 +92,6 @@ def detect_NonFCT(videoFile):
             top_left = max_loc_list[maxIndex]
             bottom_right = (top_left[0]+wList[maxIndex],
                             top_left[1]+hList[maxIndex])
-#            print(top_left,  bottom_right)
             classes_list.append(path_config.brandName)
             cv2.rectangle(frame, top_left, bottom_right, (0, 255, 255), 2)
             list1.append(frameNo)
@@ -106,31 +105,27 @@ def detect_NonFCT(videoFile):
         stop = process_time()
         tf = stop-start
 
-       # cv2.imshow("detect", frame)
         print("Time Taken: {:.2f}\tFPS: {:.2f}\t{} \t{} : {}\t {:.8f}\t ".format(
             round(tf, 2), round(1/tf, 2), msg,  miscInfo["adType"], frameNo, round(max(max_val_list), 8)))
 
         cv2.imshow("detect", frame)
-        if cv2.waitKey(1) == ord('q'):
-            cv2.destroyAllWindows()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
     print(frames_List)
+    video.release()
+    cv2.destroyAllWindows()
 
 
-#    print(i)
 #   print("*********************")
-#   print(LBand_wList)
-#   print(LBand_hList)
-#  print(AstonBand_hList)
-# print(AstonBand_wList)
 
 
 def run():
     for i, channel in enumerate(path_config.detectionChannel):
+
         videoPath = os.path.join(path_config.processedVideoDir, channel)
         miscInfo["channelName"] = channel
         for i, temp in enumerate(os.listdir(tempPath)):
             temp = os.path.join(tempPath, temp)
-            # temp = r"C:\Users\Hp\Desktop\Data\Merinolam\Merinolam_LBand1_2_cropped.jpeg"
             LBand = cv2.imread(temp, cv2.IMREAD_GRAYSCALE)
             #    print(LBand.shape)
             w, h = LBand.shape[::-1]
