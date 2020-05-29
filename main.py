@@ -9,6 +9,6 @@ if __name__ == "__main__":
 
     # detect_fct.run()
     # detect_nonFCT.run()
-    # detect_branding.run()
+    detect_branding.run()
 
-    # generate_clips.run()
+    generate_clips.run()

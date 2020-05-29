@@ -2,23 +2,27 @@ import os
 import platform
 
 if platform.system() == "Windows":
-    adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
-    # adTrackerDir = os.path.join(
-    # "D:\\", "Office", "Backup", "Projects Data", "AI", "AdTracker")
-    gitRepoDir = os.path.join(
-        "D:\\", "Office", "Google Drive", "Projects", "AI", "AdTracker", "Adtracker")
+    if(os.getlogin() == "Harsh"):
+        adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
+    elif(os.getlogin() == "Ajeet"):
+        adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
 elif platform.system() == "Linux":
-    adTrackerDir = "/home/vivek/AdTracker/"
-    gitRepoDir = os.path.join("/home/vivek/", "AdTracker")
+    if(os.getlogin() == "harsh"):
+        adTrackerDir = os.path.join(
+            "/media", "harsh", "HDD", "Projects Data", "AdTracker")
+    elif(os.getlogin() == "vivek"):
+        adTrackerDir = os.path.join(
+            "/home", "vivek", "Projects Data", "AdTracker")
 
-dbDir = os.path.join(gitRepoDir, "DB")
-dbFilePath = os.path.join(dbDir, "adtrack.csv")
+dbFilePath = os.path.join(adTrackerDir, "DB", "adtrack.csv")
 
 modelDir = os.path.join(adTrackerDir, "Model")
-originalVideoDir = os.path.join(adTrackerDir, "DTH", "Original")
-processedVideoDir = os.path.join(adTrackerDir, "DTH", "Processed")
-recordingVideoDir = os.path.join(adTrackerDir, "DTH", "Recordings")
-clipsDir = os.path.join(adTrackerDir, "DTH", "Ad Clips")
+originalVideoDir = os.path.join(adTrackerDir, "Videos", "Original")
+recordingVideoDir = os.path.join(adTrackerDir, "Videos", "Recordings")
+processedVideoDir = os.path.join(adTrackerDir, "Videos", "Processed")
+detectionProcessedVideoDir = os.path.join(
+    adTrackerDir, "Videos", "Detection Processed", "Branding")
+clipsDir = os.path.join(adTrackerDir, "Videos", "Ad Clips")
 
 brandingModelName = "49_Ads"
 brandingModelConfigPath = os.path.join(
@@ -28,7 +32,7 @@ brandingModelClassesPath = os.path.join(
 brandingModelWeightsPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + "_last.weights")
 
-detectionDate = "20191211"
+detectionDate = "20200117"
 detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
 detectionAd = []
 brandName = "Merinolam"
@@ -36,4 +40,4 @@ brandName = "Merinolam"
 brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
 
 brandFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
-brandNonFCTFilePath = os.path.join(brandDir, "Cropped_"+brandName, "*.jpeg")
+brandNonFCTFilePath = os.path.join(brandDir, "Cropped_"+brandName)
