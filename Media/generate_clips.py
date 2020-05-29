@@ -7,7 +7,7 @@ import path_config
 adTrackerDir = path_config.adTrackerDir
 dbFilePath = path_config.dbFilePath
 clipsDir = path_config.clipsDir
-detectionProcessedVideoDir = path_config.detectionProcessedVideoDir
+processedVideoDir = path_config.processedVideoDir
 
 channelNameList = ["Star Sports 1", "Star Sports 1 Hindi"]
 
@@ -56,7 +56,7 @@ def run():
                 clipsDir, adBrandNameArray[fileIndex], channelNameArray[fileIndex])
             print(makeDirectoryPath)
             os.system("mkdir -p \""+makeDirectoryPath+"\"")
-            sourceFile = os.path.join(detectionProcessedVideoDir, channelName, str(
+            sourceFile = os.path.join(processedVideoDir, channelName, str(
                 fileNameArray[fileIndex]))+".mp4"
             outPutFile = os.path.join(makeDirectoryPath, str(
                 adClipFileName[fileIndex]))+".mp4"
@@ -64,7 +64,7 @@ def run():
             print(sourceFile)
             print(outPutFile)
             print(adStartTime[fileIndex]*0.040, adEndTime[fileIndex]*0.040)
-            terminalCommand = "ffmpeg -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
+            terminalCommand = "ffmpeg -hide_banner -loglevel error -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
                 sourceFile,
                 str(adStartTime[fileIndex] * 0.040),
                 str(adDurationArray[fileIndex]*0.040),
