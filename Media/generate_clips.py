@@ -12,10 +12,12 @@ processedVideoDir = path_config.processedVideoDir
 channelNameList = ["Star Sports 1", "Star Sports 1 Hindi"]
 
 makeDirectoryCommand = "mkdir -p \"{}\"".format(clipsDir)
-print(makeDirectoryCommand)
-os.system(makeDirectoryCommand)
+
 
 def run():
+    print(makeDirectoryCommand)
+    os.system(makeDirectoryCommand)
+
     for channelName in channelNameList:
         print("Cutting clips in "+channelName)
 
@@ -49,7 +51,7 @@ def run():
         fileIndex = 0
         while(fileIndex < fileNameArray.size):
             print("Cutting file: "+str(fileIndex+1) +
-                " "+adBrandNameArray[fileIndex])
+                  " "+adBrandNameArray[fileIndex])
             makeDirectoryPath = os.path.join(
                 clipsDir, adBrandNameArray[fileIndex], channelNameArray[fileIndex])
             print(makeDirectoryPath)
