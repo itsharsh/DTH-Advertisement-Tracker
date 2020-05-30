@@ -27,7 +27,7 @@ def createDirectory(path):
 
 def getListOfFiles(dirName):
     listOfFile = os.listdir(dirName)
-    allFiles = list()
+    allFiles = []
     for entry in listOfFile:
         fullPath = os.path.join(dirName, entry)
         if os.path.isdir(fullPath):
