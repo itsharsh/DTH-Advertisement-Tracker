@@ -60,7 +60,7 @@ def detect_NonFCT(videoFile, videoName):
     # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
     totalFrame = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     baseProcessed = os.path.join(
-        path_config.detectionProcessedVideoDir, "NonFCT", videoName)
+        path_config.processedVideoDir, "NonFCT", videoName)
     processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed + ".mp4"),
                                           cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     while video.isOpened:
