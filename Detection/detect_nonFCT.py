@@ -69,6 +69,14 @@ def detect_NonFCT(videoFile, videoName):
         # print("readingFrame")
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         if frameNo == totalFrame:
+            if len(list1) > 0:
+
+                frames_List.append(list1)
+                list1 = []
+
+            detectionInfo["classes"] = classes_list
+            detectionInfo["classIndex"] = frames_List
+            DB.update(detectionInfo, miscInfo)
             break
 
         ret, frame = video.read()
@@ -111,20 +119,15 @@ def detect_NonFCT(videoFile, videoName):
                 seconds=frameIndex/fps)
             cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
                         cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
-            processedVideoWrite.write(frame)
+#            processedVideoWrite.write(frame)
         #    print("started writing video")
             list1.append(frameNo)
 
         else:
             msg = "nothing matched"
-            if len(list1) > 50:
+            if len(list1) > 0:
                 frames_List.append(list1)
-                detectionInfo["classes"] = classes_list
-                detectionInfo["classIndex"] = frames_List
-                DB.update(detectionInfo, miscInfo)
-                frames_List = []
-                #list1 = []
-            list1 = []
+                list1 = []
 
         stop = process_time()
         tf = stop-start
@@ -132,6 +135,7 @@ def detect_NonFCT(videoFile, videoName):
         print("Time Taken: {:.2f}\tFPS: {:.2f}\t{} \t{} : {}\t {:.8f}\t ".format(
             round(tf, 2), round(1/tf, 2), msg,  miscInfo["adType"], frameNo, round(max(max_val_list), 8)))
 
+        processedVideoWrite.write(frame)
         cv2.imshow("detect", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

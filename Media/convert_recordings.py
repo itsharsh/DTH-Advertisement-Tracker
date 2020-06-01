@@ -144,7 +144,7 @@ def convert_AddStamp(videoPath, videoName, subFolder):
     if not os.path.exists(os.path.join(baseOriginal + ".mp4")) or totalFrame_recording != totalFrame_original:
         st1 = process_time()
 
-        terminalCommand = "ffmpeg -y -i {}  {}".format(
+        terminalCommand = "ffmpeg -hide_banner -loglevel error -y -i {} {}".format(
             videoPath, os.path.join(baseOriginal + ".mp4"))
         print(terminalCommand)
         print(os.popen(terminalCommand).read())
