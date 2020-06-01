@@ -102,6 +102,8 @@ def detectFCT(videoFile, clipFile, start_time, videoName):
                         frames_list.append(list2)
                         print("appended")
                         list1 = []
+                        detectionInfo["classIndex"] = frames_list
+                        detectionInfo["classes"] = classes_list
                         DB.update(detectionInfo, miscInfo)
                         frames_list = []
                         print(frames_list)
@@ -116,7 +118,7 @@ def detectFCT(videoFile, clipFile, start_time, videoName):
                 if (msg == "Matched"):
                     break
 
-        detectionInfo["classIndex"] = frames_list
+#        detectionInfo["classIndex"] = frames_list
         print(detectionInfo)
         print(miscInfo)
         print(frames_list)
@@ -131,6 +133,9 @@ def detectFCT(videoFile, clipFile, start_time, videoName):
                 frames_list.append(list2)
                 print("appended")
                 list1 = []
+                detectionInfo["classIndex"] = frames_list
+                detectionInfo["classes"] = classes_list
+                DB.update(detectionInfo, miscInfo)
                 print(frames_list)
             #should_restart = False
 
@@ -138,8 +143,8 @@ def detectFCT(videoFile, clipFile, start_time, videoName):
             cap1.set(cv2.CAP_PROP_POS_FRAMES, 0)
             should_restart = True
             break
-    detectionInfo["classes"] = classes_list
-    DB.update(detectionInfo, miscInfo)
+    #detectionInfo["classes"] = classes_list
+    #DB.update(detectionInfo, miscInfo)
     stop_time = process_time()
     extime = stop_time - start_time
     print("Total Time Taken: ", extime)
