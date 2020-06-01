@@ -56,63 +56,15 @@ def convert_cv2():
     print("time to process whole task=", clip_time-clip_startTime)
 
 
-def convert_AddStamp(videoPath, videoName, subFolder):
-    print(videoPath)
-    print(videoName)
-    print(subFolder)
-    clip_startTime = process_time()
-#    videoRead = cv2.VideoCapture(videoPath)
-#    baseTimestamp = getTimestampFromVideofile(videoName)
-#    (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
-#              int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-
-    # fps = int(videoRead.get(cv2.CAP_PROP_FPS))
-
-    if subFolder == "Recordings":
-
-        # if subFolder == "a":
-        baseProcessed = os.path.splitext(os.path.join(
-            processedVideoDir, videoName))[0]
-        baseOriginal = os.path.splitext(os.path.join(
-            originalVideoDir, videoName))[0]
-
-    else:
-        if not os.path.exists(os.path.join(processedVideoDir, subFolder)):
-            os.makedirs(os.path.join(processedVideoDir, subFolder))
-            print("primtyr")
-        if not os.path.exists(os.path.join(originalVideoDir, subFolder)):
-            os.makedirs(os.path.join(originalVideoDir, subFolder))
-
-        baseProcessed = os.path.splitext(os.path.join(
-            processedVideoDir, subFolder, videoName))[0]
-        baseOriginal = os.path.splitext(os.path.join(
-            originalVideoDir, subFolder, videoName))[0]
-
-    videoRead = cv2.VideoCapture(os.path.join(baseOriginal + ".mp4"))
-    totalFrame_original = videoRead.get(cv2.CAP_PROP_FRAME_COUNT)
-    videoRead2 = cv2.VideoCapture(os.path.join(baseProcessed + ".mp4"))
-    totalFrame_processed = videoRead2.get(cv2.CAP_PROP_FRAME_COUNT)
-    videoRead3 = cv2.VideoCapture(videoPath)
-    totalFrame_recording = videoRead3.get(cv2.CAP_PROP_FRAME_COUNT)
-
-    if not os.path.exists(os.path.join(baseOriginal + ".mp4")) or totalFrame_recording != totalFrame_original:
-        st1 = process_time()
-
-        terminalCommand = "ffmpeg -hide_banner -loglevel error -y -i {}  {}".format(
-            videoPath, os.path.join(baseOriginal + ".mp4"))
-        print(terminalCommand)
-        print(os.popen(terminalCommand).read())
-    # originalVideoWrite = cv2.VideoWriter(os.path.join(baseOriginal + ".mp4"),
-     #                                    cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
-
-    if os.path.exists(os.path.join(baseProcessed+".mp4")):
-        if totalFrame_processed == totalFrame_original:
-            print("file existss")
-        else:
-            print("file not matched")
-            tc = "del {} ".format(os.path.join(baseOriginal+".mp4"))
-            print(os.popen(tc).read())
-#    if not os.path.exists(os.path.join(baseProcessed+".mp4")) or totalFrame_processed != totalFrame_original:
+def processed():
+    #    if os.path.exists(os.path.join(baseProcessed+".mp4")):
+    #        if totalFrame_processed == totalFrame_original:
+    #            print("file existss")
+    #        else:
+    #            print("file not matched")
+    #            tc = "del {} ".format(os.path.join(baseOriginal+".mp4"))
+ #           print(os.popen(tc).read())
+    #    if not os.path.exists(os.path.join(baseProcessed+".mp4")) or totalFrame_processed != totalFrame_original:
  #       videoRead = cv2.VideoCapture(os.path.join(baseOriginal+ ".mp4"))
 
     if not os.path.exists(os.path.join(baseProcessed+".mp4")) or totalFrame_processed != totalFrame_recording:
@@ -139,7 +91,7 @@ def convert_AddStamp(videoPath, videoName, subFolder):
             frameTime = timedelta(
                 seconds=frameIndex/fps)
 
-            # originalVideoWrite.write(frame)
+            originalVideoWrite.write(frame)
             frame_time = process_time()
 
             cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
@@ -147,7 +99,59 @@ def convert_AddStamp(videoPath, videoName, subFolder):
             processedVideoWrite.write(frame)
             frame2_time = process_time()
         clip_time = process_time()
-        tf = clip_time-clip_startTime
+
+
+def convert_AddStamp(videoPath, videoName, subFolder):
+    print(videoPath)
+    print(videoName)
+    print(subFolder)
+    clip_startTime = process_time()
+#    videoRead = cv2.VideoCapture(videoPath)
+#    baseTimestamp = getTimestampFromVideofile(videoName)
+#    (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
+#              int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+
+    #fps = int(videoRead.get(cv2.CAP_PROP_FPS))
+
+    if subFolder == "Recordings":
+
+        # if subFolder == "a":
+        #        baseProcessed = os.path.splitext(os.path.join(
+        #            processedVideoDir, videoName))[0]
+        baseOriginal = os.path.splitext(os.path.join(
+            originalVideoDir, videoName))[0]
+
+    else:
+        #        if not os.path.exists(os.path.join(processedVideoDir, subFolder)):
+        #            os.makedirs(os.path.join(processedVideoDir, subFolder))
+        #            print("primtyr")
+        if not os.path.exists(os.path.join(originalVideoDir, subFolder)):
+            os.makedirs(os.path.join(originalVideoDir, subFolder))
+
+ #       baseProcessed = os.path.splitext(os.path.join(
+ #           processedVideoDir, subFolder, videoName))[0]
+        baseOriginal = os.path.splitext(os.path.join(
+            originalVideoDir, subFolder, videoName))[0]
+
+    videoRead = cv2.VideoCapture(os.path.join(baseOriginal + ".mp4"))
+    totalFrame_original = videoRead.get(cv2.CAP_PROP_FRAME_COUNT)
+#    videoRead2 = cv2.VideoCapture(os.path.join(baseProcessed + ".mp4"))
+#    totalFrame_processed = videoRead2.get(cv2.CAP_PROP_FRAME_COUNT)
+    videoRead3 = cv2.VideoCapture(videoPath)
+    totalFrame_recording = videoRead3.get(cv2.CAP_PROP_FRAME_COUNT)
+#    fps = int(videoRead3.get(cv2.CAP_PROP_FPS))
+
+    if not os.path.exists(os.path.join(baseOriginal + ".mp4")) or totalFrame_recording != totalFrame_original:
+        st1 = process_time()
+
+        terminalCommand = "ffmpeg -hide_banner -loglevel error -y -i {}  {}".format(
+            videoPath, os.path.join(baseOriginal + ".mp4"))
+        print(terminalCommand)
+        print(os.popen(terminalCommand).read())
+#    originalVideoWrite = cv2.VideoWriter(os.path.join(baseOriginal + ".mp4"),
+#                                         cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
+        stop = process_time()
+        tf = stop-st1
         print("time to process: {:.2f} \t FPS: \t videoName: {}".format(
             round(tf, 2), videoName))
 
