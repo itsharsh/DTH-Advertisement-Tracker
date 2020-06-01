@@ -61,11 +61,11 @@ def run():
                 sourceFile = os.path.join(processedVideoDir, "Branding", channelName, str(
                     fileNameArray[fileIndex]))+".mp4"
             elif adTypeArray[fileIndex]=="FCT":
-                sourceFile = os.path.join(FCTVideoDir, "FCT", channelName, str(
+                sourceFile = os.path.join(processedVideoDir, "FCT", channelName, str(
                     fileNameArray[fileIndex]))+".mp4"
             for bandType in NonFCT:
                 if adTypeArray[fileIndex]==bandType :
-                    sourceFile = os.path.join(NonFCTVideoDir, "NonFCT", channelName, str(
+                    sourceFile = os.path.join(processedVideoDir, "NonFCT", channelName, str(
                         fileNameArray[fileIndex]))+".mp4"
             outPutFile = os.path.join(makeDirectoryPath, str(
                 adClipFileName[fileIndex]))+".mp4"
@@ -73,7 +73,7 @@ def run():
             print(sourceFile)
             print(outPutFile)
             print(adStartTime[fileIndex]*0.040, adEndTime[fileIndex]*0.040)
-            terminalCommand = "ffmpeg -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
+            terminalCommand = "ffmpeg -hide_banner -loglevel error -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
                 sourceFile,
                 str(adStartTime[fileIndex] * 0.040),
                 str(adDurationArray[fileIndex]*0.040),
