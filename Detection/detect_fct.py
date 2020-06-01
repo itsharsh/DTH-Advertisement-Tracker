@@ -10,6 +10,7 @@ import Detection
 import path_config
 from DB import update_db as DB
 
+
 videoPath = path_config.originalVideoDir
 clipFileName = path_config.brandFCTFilePath
 
@@ -42,7 +43,8 @@ def detectFCT(videoFile, clipFile, start_time):
     should_restart = True
     print(fps)
 #    frames_list = []
-  #  cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+#    cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+
     should_restart = True
     while cap1.isOpened or should_restart:
         frames_list = []
@@ -71,6 +73,11 @@ def detectFCT(videoFile, clipFile, start_time):
                         print("appended")
                         list1 = []
                         print(frames_list)
+
+                cv2.imshow("frame1", frame1)
+                cv2.imshow("frame", frame)
+                if cv2.waitKey(1) == ord("q"):
+                    cv2.destroyAllWindows
                 print("Time Taken: {:.2f}\tFPS: {:.2f}\t{}\t{} : {}\t SSIM: {:.8f}".format(
                     round(tf, 2), round(1/tf, 2), msg, cap.get(cv2.CAP_PROP_POS_FRAMES), cap1.get(cv2.CAP_PROP_POS_FRAMES), round(s, 8)))
 

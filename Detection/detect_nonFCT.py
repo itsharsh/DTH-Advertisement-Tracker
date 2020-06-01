@@ -2,6 +2,8 @@ import os
 import cv2
 import numpy as np
 from time import process_time
+from datetime import datetime
+from datetime import timedelta
 
 import Detection
 import path_config
@@ -39,13 +41,28 @@ detectionInfo = {"classIndex": None, "classes": None, "baseTimestamp": "",
 threshold = .58
 
 
-def detect_NonFCT(videoFile):
+def getTimestampFromVideofile(videoName):
+    timestamp = videoName.split(".")[0]
+    timestamp = datetime.strptime(timestamp, "%Y%m%d-%H%M%S")
+    return timestamp
+
+
+def detect_NonFCT(videoFile, videoName):
     frames_List = []
     list1 = []
     classes_list = []
     video = cv2.VideoCapture(videoFile)
+    baseTimestamp = getTimestampFromVideofile(videoName)
+    (W, H) = (int(video.get(cv2.CAP_PROP_FRAME_WIDTH)),
+              int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    fps = int(video.get(cv2.CAP_PROP_FPS))
+
     # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
     totalFrame = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    baseProcessed = os.path.join(
+        path_config.detectionProcessedVideoDir, "NonFCT", videoName)
+    processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed + ".mp4"),
+                                          cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     while video.isOpened:
         # print("readingFrame")
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
@@ -78,7 +95,7 @@ def detect_NonFCT(videoFile):
             max_val_list.append(max_val)
         # for i in max_val_list:
         if max(max_val_list) >= threshold:
-         #   if (i in max_val_list) >= threshold:
+            #   if (i in max_val_list) >= threshold:
             maxIndex = max_val_list.index(max(max_val_list))
 #           print(maxIndex)
             if tempList[maxIndex].startswith("Cropped_"+path_config.brandName+"_LBand"):
@@ -94,6 +111,14 @@ def detect_NonFCT(videoFile):
                             top_left[1]+hList[maxIndex])
             classes_list.append(path_config.brandName)
             cv2.rectangle(frame, top_left, bottom_right, (0, 255, 255), 2)
+            frameIndex = video.get(cv2.CAP_PROP_POS_FRAMES)
+
+            frameTime = timedelta(
+                seconds=frameIndex/fps)
+            cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
+            processedVideoWrite.write(frame)
+        #    print("started writing video")
             list1.append(frameNo)
 
         else:
@@ -122,7 +147,7 @@ def detect_NonFCT(videoFile):
 def run():
     for i, channel in enumerate(path_config.detectionChannel):
 
-        videoPath = os.path.join(path_config.processedVideoDir, channel)
+        videoPath = os.path.join(path_config.originalVideoDir, channel)
         miscInfo["channelName"] = channel
         for i, temp in enumerate(os.listdir(tempPath)):
             temp = os.path.join(tempPath, temp)
@@ -156,7 +181,7 @@ def run():
 
                     videoFile = os.path.join(videoPath, videoName)
                     print("will start detection of band")
-                    detect_NonFCT(videoFile)
+                    detect_NonFCT(videoFile, videoName)
 
 
 if __name__ == "__main__":
