@@ -129,6 +129,7 @@ def detect_NonFCT(videoFile, videoName):
 
         print("Time Taken: {:.2f}\tFPS: {:.2f}\t{} \t{} : {}\t {:.8f}\t ".format(
             round(tf, 2), round(1/tf, 2), msg,  miscInfo["adType"], frameNo, round(max(max_val_list), 8)))
+
         processedVideoWrite.write(frame)
         cv2.imshow("detect", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
