@@ -60,7 +60,7 @@ def detect_NonFCT(videoFile, videoName):
     # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
     totalFrame = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     baseProcessed = os.path.join(
-        path_config.detectionProcessedVideoDir, "NonFCT", videoName)
+        path_config.processedVideoDir, "NonFCT", videoName)
     processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed + ".mp4"),
                                           cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     while video.isOpened:
@@ -109,7 +109,7 @@ def detect_NonFCT(videoFile, videoName):
                 seconds=frameIndex/fps)
             cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
                         cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
-            processedVideoWrite.write(frame)
+#            processedVideoWrite.write(frame)
         #    print("started writing video")
             list1.append(frameNo)
 
@@ -130,6 +130,7 @@ def detect_NonFCT(videoFile, videoName):
         print("Time Taken: {:.2f}\tFPS: {:.2f}\t{} \t{} : {}\t {:.8f}\t ".format(
             round(tf, 2), round(1/tf, 2), msg,  miscInfo["adType"], frameNo, round(max(max_val_list), 8)))
 
+        processedVideoWrite.write(frame)
         cv2.imshow("detect", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
