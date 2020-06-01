@@ -1,10 +1,11 @@
 import os
 import csv
 import cv2
-import logging
-import datetime
+from datetime import datetime
+from datetime import timedelta
 from time import process_time
 from skimage.measure import compare_ssim as ssim
+
 
 import Detection
 import path_config
@@ -24,11 +25,18 @@ miscInfo = {
     "frameToRead": 1  # read every nth frame
 }
 
+
+def getTimestampFromVideofile(videoName):
+    timestamp = videoName.split(".")[0]
+    timestamp = datetime.strptime(timestamp, "%Y%m%d-%H%M%S")
+    return timestamp
+
+
 detectionInfo = {"classIndex": None, "classes": None, "baseTimestamp": "",
                  "frameDimensions": (256, 256)}
 
 
-def detectFCT(videoFile, clipFile, start_time):
+def detectFCT(videoFile, clipFile, start_time, videoName):
     classes_list = []
     cap1 = cv2.VideoCapture(videoFile)
     cap = cv2.VideoCapture(clipFile)
@@ -44,6 +52,22 @@ def detectFCT(videoFile, clipFile, start_time):
     print(fps)
 #    frames_list = []
 #    cap1.set(cv2.CAP_PROP_POS_FRAMES, 65550)
+
+
+# for writing video
+    baseTimestamp = getTimestampFromVideofile(videoName)
+    (W, H) = (int(cap1.get(cv2.CAP_PROP_FRAME_WIDTH)),
+              int(cap1.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    fps = int(cap1.get(cv2.CAP_PROP_FPS))
+
+    # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
+    totalFrame = int(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
+    baseProcessed = os.path.join(
+        path_config.processedVideoDir, "FCT")
+    if not os.path.exists(baseProcessed):
+        os.mkdir(baseProcessed)
+    processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed, videoName),
+                                          cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
 
     should_restart = True
     while cap1.isOpened or should_restart:
@@ -64,16 +88,24 @@ def detectFCT(videoFile, clipFile, start_time):
                 if s >= ssimThreshold:
                     msg = "Matched"
                     list1.append(cap1.get(cv2.CAP_PROP_POS_FRAMES))
+                    frameIndex = cap1.get(cv2.CAP_PROP_POS_FRAMES)
+
+                    frameTime = timedelta(
+                        seconds=frameIndex/fps)
+                    cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
                     classes_list.append(brand_name)
                 else:
                     msg = "Not Matched"
-                    if len(list1) > 0:
+                    if len(list1) > 50:
                         list2 = list1
                         frames_list.append(list2)
                         print("appended")
                         list1 = []
+                        DB.update(detectionInfo, miscInfo)
+                        frames_list = []
                         print(frames_list)
-
+                processedVideoWrite.write(frame1)
                 cv2.imshow("frame1", frame1)
                 cv2.imshow("frame", frame)
                 if cv2.waitKey(1) == ord("q"):
@@ -128,7 +160,9 @@ def run():
                     miscInfo["videoName"])
                 videoFile = os.path.join(videoPath, folder, file)
                 start_time = process_time()
-                detectFCT(videoFile, clipFileName, start_time)
+                print(file)
+                print("************************************")
+                detectFCT(videoFile, clipFileName, start_time, file)
 # print(miscInfo)
 # print(detectionInfo)
 
