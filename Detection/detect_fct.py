@@ -1,6 +1,7 @@
 import os
 import csv
 import cv2
+import sys
 from datetime import datetime
 from datetime import timedelta
 from time import process_time
@@ -36,6 +37,16 @@ def getTimestampFromVideofile(videoName):
     return timestamp
 
 
+def videoCheck(originalVideo, processedVideo):
+    originalRead = cv2.VideoCapture(originalVideo)
+    processedRead = cv2.VideoCapture(processedVideo)
+    originalVideoFrame = int(originalRead.get(cv2.CAP_PROP_FRAME_COUNT))
+    processedVideoFrame = int(processedRead.get(cv2.CAP_PROP_FRAME_COUNT))
+    if processedVideoFrame == originalVideoFrame:
+        return True
+    else:
+        return False
+
 
 def detectFCT(videoFile, clipFile, start_time, videoName):
     classes_list = []
@@ -67,7 +78,8 @@ def detectFCT(videoFile, clipFile, start_time, videoName):
         path_config.processedVideoDir, "FCT")
     if not os.path.exists(baseProcessed):
         os.mkdir(baseProcessed)
-    if os.path.exists(os.path.join(baseProcessed, videoName)):
+    print(videoCheck(videoFile, os.path.join(baseProcessed, videoName)))
+    if videoCheck(videoFile, os.path.join(baseProcessed, videoName)) == True:
         return print("file already")
     processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed, videoName),
                                           cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
@@ -112,10 +124,10 @@ def detectFCT(videoFile, clipFile, start_time, videoName):
                 processedVideoWrite.write(frame1)
                 cv2.imshow("frame1", frame1)
 #                cv2.imshow("frame", frame)
-                if cv2.waitKey(1) == ord("q"):
+                if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
-                if cv2.waitKEy(1) == ord("s"):
-                    return print("stopped")
+                if cv2.waitKey(1) & 0xFF == ord('s'):
+                    sys.exit()
                 print("Time Taken: {:.2f}\tFPS: {:.2f}\t{}\t{} : {}\t SSIM: {:.8f}".format(
                     round(tf, 2), round(1/tf, 2), msg, cap.get(cv2.CAP_PROP_POS_FRAMES), cap1.get(cv2.CAP_PROP_POS_FRAMES), round(s, 8)))
 
