@@ -60,15 +60,17 @@ def detect_NonFCT(videoFile, videoName):
     # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
     totalFrame = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     baseProcessed = os.path.join(
-        path_config.processedVideoDir, "NonFCT", videoName)
-    processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed + ".mp4"),
+        path_config.processedVideoDir, "NonFCT")
+    if not os.path.exists(baseProcessed):
+        os.mkdir(baseProcessed)
+
+    processedVideoWrite = cv2.VideoWriter(os.path.join(baseProcessed, videoName),
                                           cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     while video.isOpened:
         # print("readingFrame")
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         if frameNo == totalFrame:
             break
-
         ret, frame = video.read()
 
         start = process_time()
@@ -103,12 +105,7 @@ def detect_NonFCT(videoFile, videoName):
                             top_left[1]+hList[maxIndex])
             classes_list.append(path_config.brandName)
             cv2.rectangle(frame, top_left, bottom_right, (0, 255, 255), 2)
-            frameIndex = video.get(cv2.CAP_PROP_POS_FRAMES)
 
-            frameTime = timedelta(
-                seconds=frameIndex/fps)
-            cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
-                        cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
 #            processedVideoWrite.write(frame)
         #    print("started writing video")
             list1.append(frameNo)
@@ -121,9 +118,14 @@ def detect_NonFCT(videoFile, videoName):
                 detectionInfo["classIndex"] = frames_List
                 DB.update(detectionInfo, miscInfo)
                 frames_List = []
-                #list1 = []
+                # list1 = []
             list1 = []
-
+# adding timestamp
+        frameIndex = video.get(cv2.CAP_PROP_POS_FRAMES)
+        frameTime = timedelta(
+            seconds=frameIndex/fps)
+        cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
+                    cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
         stop = process_time()
         tf = stop-start
 
@@ -134,6 +136,8 @@ def detect_NonFCT(videoFile, videoName):
         cv2.imshow("detect", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+#        if cv2.waitKey(1) == ord("a"):
+#            cv2.destroyWindow("detect")
     print(frames_List)
     video.release()
     cv2.destroyAllWindows()
