@@ -7,10 +7,12 @@ import path_config
 adTrackerDir = path_config.adTrackerDir
 dbFilePath = path_config.dbFilePath
 clipsDir = path_config.clipsDir
-detectionProcessedVideoDir = path_config.detectionProcessedVideoDir
+processedVideoDir = path_config.processedVideoDir
+NonFCTVideoDir = path_config.NonFCTVideoDir
+FCTVideoDir = path_config.FCTVideoDir
 
 channelNameList = ["Star Sports 1", "Star Sports 1 Hindi"]
-
+NonFCT=["L Band","Aston Band"]
 makeDirectoryCommand = "mkdir -p \"{}\"".format(clipsDir)
 print(makeDirectoryCommand)
 os.system(makeDirectoryCommand)
@@ -35,6 +37,7 @@ def run():
         fileNameArray = np.array(dataset['Source File'])
         channelNameArray = np.array(dataset['Channel Name'])
         adBrandNameArray = np.array(dataset['Brand Name'])
+        adTypeArray=np.array(dataset['Type of Ad'])
         print(fileNameArray)
         fileTimeStampArray = pd.to_datetime(
             dataset['Source File'], errors='coerce', format="%Y%m%d-%H%M%S")
@@ -54,15 +57,23 @@ def run():
                 clipsDir, adBrandNameArray[fileIndex], channelNameArray[fileIndex])
             print(makeDirectoryPath)
             os.system("mkdir -p \""+makeDirectoryPath+"\"")
-            sourceFile = os.path.join(detectionProcessedVideoDir, channelName, str(
-                fileNameArray[fileIndex]))+".mp4"
+            if adTypeArray[fileIndex]=="Branding":
+                sourceFile = os.path.join(processedVideoDir, "Branding", channelName, str(
+                    fileNameArray[fileIndex]))+".mp4"
+            elif adTypeArray[fileIndex]=="FCT":
+                sourceFile = os.path.join(processedVideoDir, "FCT", channelName, str(
+                    fileNameArray[fileIndex]))+".mp4"
+            for bandType in NonFCT:
+                if adTypeArray[fileIndex]==bandType :
+                    sourceFile = os.path.join(processedVideoDir, "NonFCT", channelName, str(
+                        fileNameArray[fileIndex]))+".mp4"
             outPutFile = os.path.join(makeDirectoryPath, str(
                 adClipFileName[fileIndex]))+".mp4"
 
             print(sourceFile)
             print(outPutFile)
             print(adStartTime[fileIndex]*0.040, adEndTime[fileIndex]*0.040)
-            terminalCommand = "ffmpeg -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
+            terminalCommand = "ffmpeg -hide_banner -loglevel error -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
                 sourceFile,
                 str(adStartTime[fileIndex] * 0.040),
                 str(adDurationArray[fileIndex]*0.040),

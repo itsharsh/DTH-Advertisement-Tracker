@@ -70,6 +70,14 @@ def detect_NonFCT(videoFile, videoName):
         # print("readingFrame")
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         if frameNo == totalFrame:
+            if len(list1) > 0:
+
+                frames_List.append(list1)
+                list1 = []
+
+            detectionInfo["classes"] = classes_list
+            detectionInfo["classIndex"] = frames_List
+            DB.update(detectionInfo, miscInfo)
             break
         ret, frame = video.read()
 
@@ -112,8 +120,9 @@ def detect_NonFCT(videoFile, videoName):
 
         else:
             msg = "nothing matched"
-            if len(list1) > 50:
+            if len(list1) > 0:
                 frames_List.append(list1)
+
                 detectionInfo["classes"] = classes_list
                 detectionInfo["classIndex"] = frames_List
                 DB.update(detectionInfo, miscInfo)
@@ -126,6 +135,7 @@ def detect_NonFCT(videoFile, videoName):
             seconds=frameIndex/fps)
         cv2.putText(frame, (baseTimestamp+frameTime).strftime("%Y/%m/%d-%H:%M:%S.%f")[:-3], (10, 30),
                     cv2.FONT_HERSHEY_COMPLEX, 0.75, (255, 255, 255), 1)
+
         stop = process_time()
         tf = stop-start
 
