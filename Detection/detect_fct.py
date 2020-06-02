@@ -37,7 +37,7 @@ def detectFCT(videoFile, clipFile, start_time):
         return print("file not found")
     total_frame1 = int(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
     print(total_frame, total_frame1)
-    list1 = [] 227ssXSWDER GGs
+    list1 = []
     brand_name = path_config.brandName
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     should_restart = True
