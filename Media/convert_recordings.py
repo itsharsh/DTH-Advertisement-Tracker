@@ -8,21 +8,13 @@ from datetime import timedelta
 from os.path import isfile, join
 import path_config
 
+import Detection
+
 
 adTrackerDir = path_config.adTrackerDir
 originalVideoDir = path_config.originalVideoDir
 processedVideoDir = path_config.processedVideoDir
 recordingVideoDir = path_config.recordingVideoDir
-
-# originalVideoDir = r"C:\Users\Hp\Desktop\comp\b"
-# processedVideoDir = r"C:\Users\Hp\Desktop\comp\c"
-# recordingVideoDir = r"C:\Users\Hp\Desktop\comp\a"
-
-
-def getTimestampFromVideofile(videoName):
-    timestamp = videoName.split(".")[0]
-    timestamp = datetime.strptime(timestamp, "%Y%m%d-%H%M%S")
-    return timestamp
 
 
 def convert_cv2():
@@ -69,7 +61,7 @@ def processed():
 
     if not os.path.exists(os.path.join(baseProcessed+".mp4")) or totalFrame_processed != totalFrame_recording:
         videoRead = cv2.VideoCapture(videoPath)
-        baseTimestamp = getTimestampFromVideofile(videoName)
+        baseTimestamp = Detection.getTimestampFromVideofile(videoName)
         (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
                   int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
@@ -133,21 +125,29 @@ def convert_AddStamp(videoPath, videoName, subFolder):
         baseOriginal = os.path.splitext(os.path.join(
             originalVideoDir, subFolder, videoName))[0]
 
-    videoRead = cv2.VideoCapture(os.path.join(baseOriginal + ".mp4"))
-    totalFrame_original = videoRead.get(cv2.CAP_PROP_FRAME_COUNT)
+#    videoRead = cv2.VideoCapture(os.path.join(baseOriginal + ".mp4"))
+#    totalFrame_original = videoRead.get(cv2.CAP_PROP_FRAME_COUNT)
 #    videoRead2 = cv2.VideoCapture(os.path.join(baseProcessed + ".mp4"))
 #    totalFrame_processed = videoRead2.get(cv2.CAP_PROP_FRAME_COUNT)
-    videoRead3 = cv2.VideoCapture(videoPath)
-    totalFrame_recording = videoRead3.get(cv2.CAP_PROP_FRAME_COUNT)
+#    videoRead3 = cv2.VideoCapture(videoPath)
+#    totalFrame_recording = videoRead3.get(cv2.CAP_PROP_FRAME_COUNT)
 #    fps = int(videoRead3.get(cv2.CAP_PROP_FPS))
-
-    if not os.path.exists(os.path.join(baseOriginal + ".mp4")) or totalFrame_recording != totalFrame_original:
+    print(Detection.videoCheck(os.path.join(baseOriginal + ".mp4"), videoPath))
+    # if not os.path.exists(os.path.join(baseOriginal + ".mp4")) or totalFrame_recording != totalFrame_original:
+    if Detection.videoCheck(os.path.join(baseOriginal + ".mp4"), videoPath) == True:
+        print("file exists....deleting")
+        os.remove(videoPath)
+    else:
         st1 = process_time()
-
         terminalCommand = "ffmpeg -hide_banner -loglevel error -y -i {} {}".format(
             videoPath, os.path.join(baseOriginal + ".mp4"))
         print(terminalCommand)
         print(os.popen(terminalCommand).read())
+
+        if Detection.videoCheck(os.path.join(baseOriginal + ".mp4"), videoPath) == True:
+            print("succesfully converted..now deleting/")
+            os.remove(videoPath)
+
 #    originalVideoWrite = cv2.VideoWriter(os.path.join(baseOriginal + ".mp4"),
 #                                         cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
         stop = process_time()
