@@ -1,4 +1,5 @@
 import os
+import getpass
 import platform
 
 if platform.system() == "Windows":
@@ -8,7 +9,11 @@ if platform.system() == "Windows":
         adTrackerDir = os.path.join(
             "D:\\", "Office", "Backup", "Projects_Data", "AI", "AdTracker")
 elif platform.system() == "Linux":
-    if(os.getlogin() == "harsh"):
+    if(getpass.getuser() == "ai-ctrl"):
+            adTrackerDir = os.path.join(
+                "/home","ai-ctrl","Aj___","Office", "Backup", "Projects_Data", "AI", "AdTracker")
+
+    elif(os.getlogin() == "harsh"):
         adTrackerDir = os.path.join(
             "/media", "harsh", "HDD", "Projects Data", "AdTracker")
     elif(os.getlogin() == "vivek"):
