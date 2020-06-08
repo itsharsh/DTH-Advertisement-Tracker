@@ -61,8 +61,8 @@ def captureFrames(videoName):
     # (W, H) = frame.shape[:2]
     (W, H) = (int(videoRead.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(videoRead.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    makeDirectoryCommand = "mkdir -p \"{}\"".format(os.path.join(processedVideoDir,"Branding",
-                                              miscInfo["channelName"]))
+    makeDirectoryCommand = "mkdir -p \"{}\"".format(os.path.join(processedVideoDir, "Branding",
+                                                                 miscInfo["channelName"]))
     os.system(makeDirectoryCommand)
     videoWrite = cv2.VideoWriter(os.path.join(processedVideoDir, "Branding",
                                               miscInfo["channelName"], videoName), cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), miscInfo["videoFPS"], (W, H))

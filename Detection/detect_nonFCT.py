@@ -9,12 +9,8 @@ import Detection
 import path_config
 from DB import update_db as DB
 
-if os.path.exists(os.path.join(path_config.brandNonFCTFilePath,"resized")):
-#os.makedirs(os.path.join(path_config.brandNonFCTFilePath,"resized"))
-#tempPath = path_config.brandNonFCTFilePath
-    tempPath = os.path.join(path_config.brandNonFCTFilePath,"resized")
-    tempList = os.listdir(tempPath)
-    print(tempList)
+tempPath = os.path.join(path_config.brandNonFCTFilePath, "Resized")
+
 hList = []
 wList = []
 LBand_hList = []
@@ -50,7 +46,7 @@ def getTimestampFromVideofile(videoName):
     return timestamp
 
 
-def detect_NonFCT(videoFile, videoName):
+def detect_NonFCT(tempList, videoFile, videoName):
     frames_List = []
     list1 = []
     classes_list = []
@@ -58,7 +54,7 @@ def detect_NonFCT(videoFile, videoName):
     baseTimestamp = getTimestampFromVideofile(videoName)
     (W, H) = (int(video.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    print((W,H))
+    print((W, H))
     fps = int(video.get(cv2.CAP_PROP_FPS))
 
     # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
@@ -75,7 +71,7 @@ def detect_NonFCT(videoFile, videoName):
 
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         if frameNo == totalFrame:
-            if len(list1) > 75 and len(list1)<175:
+            if len(list1) > 75 and len(list1) < 175:
 
                 frames_List.append(list1)
                 list1 = []
@@ -94,10 +90,9 @@ def detect_NonFCT(videoFile, videoName):
         for i, temp in enumerate(tempList):
             temp = os.path.join(tempPath, temp)
             Band = cv2.imread(temp, cv2.IMREAD_GRAYSCALE)
-            
+
         #    print('Original Dimensions : ',temp.shape)
 
-            
         #   print('Resized Dimensions : ',resized.shape)
 #            print("checking all plates")
             res = cv2.matchTemplate(frame_gray, Band, cv2.TM_CCOEFF_NORMED)
@@ -130,7 +125,7 @@ def detect_NonFCT(videoFile, videoName):
 
         else:
             msg = "nothing matched"
-            if len(list1) > 75 and len(list1)<175:
+            if len(list1) > 75 and len(list1) < 175:
                 frames_List.append(list1)
 
                 detectionInfo["classes"] = classes_list
@@ -167,6 +162,7 @@ def detect_NonFCT(videoFile, videoName):
 
 
 def run():
+    tempList = os.listdir(tempPath)
     for i, channel in enumerate(path_config.detectionChannel):
 
         videoPath = os.path.join(path_config.originalVideoDir, channel)
@@ -203,7 +199,7 @@ def run():
 
                     videoFile = os.path.join(videoPath, videoName)
                     print("will start detection of band")
-                    detect_NonFCT(videoFile, videoName)
+                    detect_NonFCT(tempList, videoFile, videoName)
 
 
 if __name__ == "__main__":

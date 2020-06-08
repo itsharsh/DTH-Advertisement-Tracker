@@ -10,8 +10,8 @@ if platform.system() == "Windows":
             "D:\\", "Office", "Backup", "Projects_Data", "AI", "AdTracker")
 elif platform.system() == "Linux":
     if(getpass.getuser() == "ai-ctrl"):
-            adTrackerDir = os.path.join(
-                "/home","ai-ctrl","Aj___","Office", "Backup", "Projects_Data", "AI", "AdTracker")
+        adTrackerDir = os.path.join(
+            "/home", "ai-ctrl", "Aj___", "Office", "Backup", "Projects_Data", "AI", "AdTracker")
 
     elif(os.getlogin() == "harsh"):
         adTrackerDir = os.path.join(
@@ -36,8 +36,9 @@ brandingModelClassesPath = os.path.join(
 brandingModelWeightsPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + "_last.weights")
 
+frameDimension=[576,720]
 detectionDate = "20200117"
-detectionChannel = ["Star Sports 1", "Star Sports 1 Hindi"]
+detectionChannel = ["Star Sports 1"]
 
 detectionAd = []
 brandName = "Merinolam"
@@ -45,4 +46,4 @@ brandName = "Merinolam"
 brandDir = os.path.join(adTrackerDir, "Brand Data", brandName)
 
 brandFCTFilePath = os.path.join(brandDir, brandName+"_FCT.mp4")
-brandNonFCTFilePath = os.path.join(brandDir, "Cropped_"+brandName)
+brandNonFCTFilePath = os.path.join(brandDir, "Cropped")

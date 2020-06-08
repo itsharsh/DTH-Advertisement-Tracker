@@ -6,10 +6,10 @@ from Media import convert_recordings
 from Media import resize_template
 
 if __name__ == "__main__":
-    #convert_recordings.run()
-    #resize_template.run()
+    # convert_recordings.run()
     # detect_fct.run()
+    resize_template.run()
     detect_nonFCT.run()
     # detect_branding.run()
 
-    # generate_clips.run()
+    generate_clips.run()
