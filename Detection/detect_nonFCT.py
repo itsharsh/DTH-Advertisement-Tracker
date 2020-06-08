@@ -9,9 +9,10 @@ import Detection
 import path_config
 from DB import update_db as DB
 
-
-tempPath = path_config.brandNonFCTFilePath
+#tempPath = path_config.brandNonFCTFilePath
+tempPath = os.path.join(path_config.brandNonFCTFilePath,"resized")
 tempList = os.listdir(tempPath)
+print(tempList)
 hList = []
 wList = []
 LBand_hList = []
@@ -38,7 +39,7 @@ detectionInfo = {"classIndex": None, "classes": None, "baseTimestamp": "",
                  "frameDimensions": (256, 256)}
 
 
-threshold = .58
+threshold = .60
 
 
 def getTimestampFromVideofile(videoName):
@@ -55,6 +56,7 @@ def detect_NonFCT(videoFile, videoName):
     baseTimestamp = getTimestampFromVideofile(videoName)
     (W, H) = (int(video.get(cv2.CAP_PROP_FRAME_WIDTH)),
               int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    print((W,H))
     fps = int(video.get(cv2.CAP_PROP_FPS))
 
     # video.set(cv2.CAP_PROP_POS_FRAMES, 34000)
@@ -68,9 +70,10 @@ def detect_NonFCT(videoFile, videoName):
                                           cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (W, H))
     while video.isOpened:
         # print("readingFrame")
+
         frameNo = int(video.get(cv2.CAP_PROP_POS_FRAMES))
         if frameNo == totalFrame:
-            if len(list1) > 0:
+            if len(list1) > 75 and len(list1)<175:
 
                 frames_List.append(list1)
                 list1 = []
@@ -79,16 +82,21 @@ def detect_NonFCT(videoFile, videoName):
             detectionInfo["classIndex"] = frames_List
             DB.update(detectionInfo, miscInfo)
             break
-        ret, frame = video.read()
 
+        ret, frame = video.read()
         start = process_time()
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         max_val_list = []
         max_loc_list = []
-        threshold = .55
+
         for i, temp in enumerate(tempList):
             temp = os.path.join(tempPath, temp)
             Band = cv2.imread(temp, cv2.IMREAD_GRAYSCALE)
+            
+        #    print('Original Dimensions : ',temp.shape)
+
+            
+        #   print('Resized Dimensions : ',resized.shape)
 #            print("checking all plates")
             res = cv2.matchTemplate(frame_gray, Band, cv2.TM_CCOEFF_NORMED)
             resList.append(res)
@@ -120,7 +128,7 @@ def detect_NonFCT(videoFile, videoName):
 
         else:
             msg = "nothing matched"
-            if len(list1) > 0:
+            if len(list1) > 75 and len(list1)<175:
                 frames_List.append(list1)
 
                 detectionInfo["classes"] = classes_list
@@ -139,8 +147,8 @@ def detect_NonFCT(videoFile, videoName):
         stop = process_time()
         tf = stop-start
 
-        print("Time Taken: {:.2f}\tFPS: {:.2f}\t{} \t{} : {}\t {:.8f}\t ".format(
-            round(tf, 2), round(1/tf, 2), msg,  miscInfo["adType"], frameNo, round(max(max_val_list), 8)))
+        print("Time Taken: {:.2f}\tFPS: {:.2f} \t{} : {}\t {:.8f}\t ".format(
+            round(tf, 2), round(1/tf, 2),   miscInfo["adType"], frameNo, round(max(max_val_list), 8)))
 
         processedVideoWrite.write(frame)
         cv2.imshow("detect", frame)
