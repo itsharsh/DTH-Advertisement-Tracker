@@ -9,10 +9,12 @@ import Detection
 import path_config
 from DB import update_db as DB
 
+if os.path.exists(os.path.join(path_config.brandNonFCTFilePath,"resized")):
+#os.makedirs(os.path.join(path_config.brandNonFCTFilePath,"resized"))
 #tempPath = path_config.brandNonFCTFilePath
-tempPath = os.path.join(path_config.brandNonFCTFilePath,"resized")
-tempList = os.listdir(tempPath)
-print(tempList)
+    tempPath = os.path.join(path_config.brandNonFCTFilePath,"resized")
+    tempList = os.listdir(tempPath)
+    print(tempList)
 hList = []
 wList = []
 LBand_hList = []
