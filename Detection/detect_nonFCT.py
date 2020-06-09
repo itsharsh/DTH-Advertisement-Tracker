@@ -155,7 +155,7 @@ def detect_NonFCT(tempList, videoFile, videoName):
 #            cv2.destroyWindow("detect")
     print(frames_List)
     video.release()
-    cv2.destroyAllWindows()
+#    cv2.destroyAllWindows()
 
 
 #   print("*********************")

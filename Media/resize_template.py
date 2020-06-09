@@ -42,6 +42,7 @@ def run():
         img = os.path.join(tempPath, temp)
     #    image=cv2.imread(img)
         imgResized = tempResize(img, frameDimension[0], frameDimension[1])
+        print(frameDimension[0], frameDimension[1])
         cv2.imwrite(os.path.join(path_config.brandNonFCTFilePath,
                                  "Resized") + img[folderLen:], imgResized)
         cv2.imshow('image', imgResized)
