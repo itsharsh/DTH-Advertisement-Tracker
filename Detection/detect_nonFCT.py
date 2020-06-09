@@ -61,6 +61,12 @@ def detect_NonFCT(tempList, videoFile, videoName):
     totalFrame = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     baseProcessed = os.path.join(
         path_config.processedVideoDir, "NonFCT")
+    ProcessedVideoFile = os.path.join(
+        path_config.processedVideoDir, "NonFCT",videoName)
+
+    if Detection.videoCheck(videoFile,ProcessedVideoFile) == True:
+        return print("File found in processed")
+    
     if not os.path.exists(baseProcessed):
         os.mkdir(baseProcessed)
 
