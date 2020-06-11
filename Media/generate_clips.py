@@ -74,8 +74,8 @@ def run():
             print(adStartTime[fileIndex]*0.040, adEndTime[fileIndex]*0.040)
             terminalCommand = "ffmpeg -hide_banner -loglevel error -n -i \"{}\" -ss {} -t {} \"{}/{}.mp4\"".format(
                 sourceFile,
-                str(adStartTime[fileIndex] * 0.040),
-                str(adDurationArray[fileIndex]*0.040),
+                str((adStartTime[fileIndex] * 0.040)-2),
+                str((adDurationArray[fileIndex]*0.040)+4),
                 makeDirectoryPath, adClipFileName[fileIndex])
             print(terminalCommand)
             print(os.popen(terminalCommand).read())
