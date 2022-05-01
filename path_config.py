@@ -4,7 +4,7 @@ import platform
 
 if platform.system() == "Windows":
     if(os.getlogin() == "Harsh"):
-        adTrackerDir = os.path.join("D:\\", "Test", "AdTracker")
+        adTrackerDir = os.path.join("D:\\", "Office","Projects Data", "AdTracker")
     elif(os.getlogin() == "Hp"):
         adTrackerDir = os.path.join(
             "D:\\", "Office", "Backup", "Projects_Data", "AI", "AdTracker")
@@ -36,7 +36,7 @@ brandingModelClassesPath = os.path.join(
 brandingModelWeightsPath = os.path.join(
     modelDir, brandingModelName, brandingModelName + "_last.weights")
 
-frameDimension=[576,720]
+frameDimension = [576, 720]
 detectionDate = "20200117"
 detectionChannel = ["Star Sports 1"]
 
